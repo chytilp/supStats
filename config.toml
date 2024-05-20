@@ -1,0 +1,5 @@
+backendUrl = "some url"
+frontendUrl = "some url"
+mobileUrl = "some url"
+dataFolder = "folder here"
+oldDataFolder = "old folder here"
