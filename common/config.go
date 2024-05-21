@@ -10,10 +10,10 @@ import (
 var config *Config
 
 type Config struct {
-	BackendUrl  string
-	FrontendUrl string
-	MobileUrl   string
-	DataFolder  string
+	BackendUrl    string
+	FrontendUrl   string
+	MobileUrl     string
+	DataFolder    string
 	OldDataFolder string
 }
 
@@ -25,7 +25,7 @@ func GetConfig() *Config {
 }
 
 func read() *Config {
-	file, err := os.Open("config.toml")
+	file, err := os.Open("configProd.toml")
 	if err != nil {
 		panic(err)
 	}

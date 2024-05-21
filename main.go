@@ -17,7 +17,7 @@ func main() {
 		fmt.Println("err in CreateDailyData")
 		log.Fatalln(err.Error())
 	}
-	err = request.MarshalToFile(*outputData)
+	err = request.MarshalToFile(*outputData, config)
 	if err != nil {
 		fmt.Println("err in MarshalToFile")
 		log.Fatalln(err.Error())

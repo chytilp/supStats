@@ -3,11 +3,12 @@ package request
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
-	"path/filepath"
 	"time"
+
+	"github.com/chytilp/supStats/common"
 )
 
 func SendRequest(url string) ([]byte, error) {
@@ -27,7 +28,7 @@ func SendRequest(url string) ([]byte, error) {
 		return nil, err
 	}
 	fmt.Printf("Response status code: %d, reason: %s\n", res.StatusCode, res.Status)
-	resBody, err := ioutil.ReadAll(res.Body)
+	resBody, err := io.ReadAll(res.Body)
 	if err != nil {
 		fmt.Printf("client: could not read response body: %s\n", err)
 		return nil, err
@@ -51,7 +52,7 @@ func UnmarshalFromFile[T any](filepath string) (*T, error) {
 		return nil, err
 	}
 	defer jsonFile.Close()
-	byteValue, err := ioutil.ReadAll(jsonFile)
+	byteValue, err := io.ReadAll(jsonFile)
 	if err != nil {
 		return nil, err
 	}
@@ -68,24 +69,20 @@ func GetWholePath(date time.Time) string {
 }
 
 func GetFolder(date time.Time) string {
-	return fmt.Sprintf("data/%04d-%02d/", date.Year(), date.Month())
+	return fmt.Sprintf("%04d-%02d/", date.Year(), date.Month())
 }
 
 func GetFileName(date time.Time) string {
 	return fmt.Sprintf("data_%04d_%02d_%02d.json", date.Year(), date.Month(), date.Day())
 }
 
-func MarshalToFile(data OutputData) error {
+func MarshalToFile(data OutputData, config *common.Config) error {
 	content, err := json.MarshalIndent(data, "", " ")
 	if err != nil {
 		return err
 	}
-	relativePath := GetWholePath(data.DownloadedAt)
-	absPath, err := filepath.Abs(relativePath)
-	if err != nil {
-		return err
-	}
-	err = ioutil.WriteFile(absPath, content, 0644)
+	absPath := config.DataFolder + GetWholePath(data.DownloadedAt)
+	err = os.WriteFile(absPath, content, 0644)
 	if err != nil {
 		return err
 	}
