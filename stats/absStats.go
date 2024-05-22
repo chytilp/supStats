@@ -4,23 +4,12 @@ import (
 	"fmt"
 	"math"
 	"sort"
-	"sync"
 	"time"
-
-	"github.com/chytilp/supStats/request"
 )
-
-type Technology int
 
 type Day string
 
 type Language string
-
-const (
-	Frontend Technology = iota
-	Backend
-	Mobile
-)
 
 type LanguageRow struct {
 	Name   Language
@@ -101,69 +90,4 @@ type StatInput struct {
 	Median    bool
 	languages *map[Language]LanguageRow
 	table     *Table
-}
-
-func (s *StatInput) fileList() (*[]string, error) {
-	return nil, nil
-}
-
-func (s *StatInput) ReadData() error {
-	langMap := map[Language]LanguageRow{}
-	s.languages = &langMap
-	table := NewTable()
-	s.table = &table
-	// read files
-	files, err := s.fileList()
-	if err != nil {
-		return err
-	}
-	// download data from files to table
-	var wg sync.WaitGroup
-	errChan := make(chan error)
-	wg.Add(len(*files))
-	for _, file := range *files {
-		path := file
-		go s.readFile(path, &wg, errChan)
-	}
-	wg.Wait()
-	close(errChan)
-	for err := range errChan {
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (s *StatInput) readFile(path string, wg *sync.WaitGroup, errChan chan<- error) {
-	data, err := request.UnmarshalFromFile[request.OutputData](path)
-	if err != nil {
-		errChan <- fmt.Errorf("UnmarshalFromFile - error in goroutine processing file: %s, err: %v", path, err)
-		return
-	}
-	var root *request.Item
-	switch s.Tech {
-	case Backend:
-		root = data.Backend
-	case Frontend:
-		root = data.Frontend
-	case Mobile:
-		root = data.Mobile
-	}
-	dayOfData := data.Day()
-	err = s.table.AddValue(root.Name, dayOfData, root.OfferCount)
-	if err != nil {
-		errChan <- fmt.Errorf("AddValue - error in goroutine processing file: %s, err: %v", path, err)
-		return
-	}
-	for _, child := range root.Children {
-		err = s.table.AddValue(child.Name, dayOfData, child.OfferCount)
-		if err != nil {
-			errChan <- fmt.Errorf("AddValue - error in goroutine processing file: %s, err: %v", path, err)
-			return
-		}
-	}
-	fmt.Printf("Data from file %s added to table.\n", path)
-	wg.Done()
 }
