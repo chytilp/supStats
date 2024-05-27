@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"sort"
+	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -29,17 +32,24 @@ type TableCreate struct {
 
 func (t *TableCreate) folderList() []string {
 	months := []string{}
-	first := time.Date(t.DateFrom.Year(), t.DateFrom.Month(), 1, 0, 0, 0, 0, nil)
-	last := time.Date(t.DateTo.Year(), t.DateTo.Month(), 1, 0, 0, 0, 0, nil)
-
-	for tmp := first; tmp.Before(last); tmp = tmp.AddDate(0, 1, 0) {
+	first := time.Date(t.DateFrom.Year(), t.DateFrom.Month(), 1, 0, 0, 0, 0, time.Local)
+	last := time.Date(t.DateTo.Year(), t.DateTo.Month(), 1, 0, 0, 0, 0, time.Local)
+	tmp := first
+	for tmp == last || tmp.Before(last) {
 		months = append(months, request.GetFolder(tmp))
+		tmp = tmp.AddDate(0, 1, 0)
 	}
 	return months
 }
 
-func (t *TableCreate) folderFiles(folderName string) (*[]string, error) {
-	absFolder := t.Config.DataFolder + folderName
+func (t *TableCreate) includeFile(filename string, firstDay int, lastDay int) bool {
+	parts := strings.Split(filename, ".")
+	parts2 := strings.Split(parts[0], "_")
+	num, _ := strconv.Atoi(parts2[3])
+	return num >= firstDay && num <= lastDay
+}
+
+func (t *TableCreate) folderFiles(absFolder string, firstDay int, lastDay int) (*[]string, error) {
 	folder, err := os.Open(absFolder)
 	if err != nil {
 		fmt.Println(err)
@@ -52,11 +62,21 @@ func (t *TableCreate) folderFiles(folderName string) (*[]string, error) {
 	}
 	absFiles := []string{}
 	for _, v := range files {
-		if !v.IsDir() && t.correctFileFormat(v.Name()) {
+		if !v.IsDir() && t.correctFileFormat(v.Name()) && t.includeFile(v.Name(), firstDay, lastDay) {
 			absFiles = append(absFiles, v.Name())
 		}
 	}
 	return &absFiles, nil
+}
+
+func (t *TableCreate) daysInMonth(folder string) int {
+	parts := strings.Split(folder, "-")
+	year, _ := strconv.Atoi(parts[0])
+	month, _ := strconv.Atoi(parts[1])
+	m := time.Month(month + 1)
+	dt := time.Date(year, m, 1, 0, 0, 0, 0, time.UTC)
+	dt2 := dt.AddDate(0, 0, -1)
+	return dt2.Day()
 }
 
 func (t *TableCreate) correctFileFormat(fileName string) bool {
@@ -69,9 +89,24 @@ func (t *TableCreate) fileList() (*[]string, error) {
 	var absFolder string
 	var err error
 	var files *[]string
-	for _, folderName := range t.folderList() {
-		absFolder = t.Config.DataFolder + folderName
-		files, err = t.folderFiles(absFolder)
+	var firstDay int = 1
+	var lastDay int
+	folderList := t.folderList()
+	var lastIndex int = len(folderList) - 1
+	for index, folderName := range folderList {
+		absFolder = t.Config.DataFolder + "/" + folderName
+		if index == 0 {
+			firstDay = t.DateFrom.Day()
+		} else {
+			firstDay = 1
+		}
+
+		if index == lastIndex {
+			lastDay = t.DateTo.Day()
+		} else {
+			lastDay = t.daysInMonth(folderName)
+		}
+		files, err = t.folderFiles(absFolder, firstDay, lastDay)
 		if err != nil {
 			fmt.Println(err)
 			return nil, err
@@ -79,8 +114,8 @@ func (t *TableCreate) fileList() (*[]string, error) {
 		for _, file := range *files {
 			allFiles = append(allFiles, absFolder+file)
 		}
-
 	}
+	sort.Strings(allFiles)
 	return &allFiles, nil
 }
 
@@ -143,4 +178,8 @@ func (t *TableCreate) readFile(path string, inclParent bool, wg *sync.WaitGroup,
 	}
 	fmt.Printf("Data from file %s added to table.\n", path)
 	wg.Done()
+}
+
+func (t *TableCreate) Table() *Table {
+	return t.table
 }

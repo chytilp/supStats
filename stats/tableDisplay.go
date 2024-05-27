@@ -28,14 +28,15 @@ func (t *TableDisplay) Lines4Print() []string {
 	maxLen += 1
 	days := t.table.ColumnHeaders()
 	lines := make([]string, 0, len(langs)+1)
-	lines = append(lines, t.formatRow(firstColumnHeader, days, maxLen, 12))
+	const otherWidth = 12
+	lines = append(lines, t.formatRow(firstColumnHeader, days, maxLen, otherWidth))
 	for _, lang := range langs {
 		values := t.table.Row(lang)
 		strValues := make([]string, 0, len(values))
 		for _, day := range days {
 			strValues = append(strValues, fmt.Sprintf("%d", values[day]))
 		}
-		lines = append(lines, t.formatRow(lang, strValues, maxLen, 12))
+		lines = append(lines, t.formatRow(lang, strValues, maxLen, otherWidth))
 	}
 	return lines
 }
