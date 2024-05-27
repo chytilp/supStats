@@ -19,7 +19,7 @@ func NewTwoStringKey(row string, column string) TwoStringKey {
 
 type Table struct {
 	data map[TwoStringKey]int
-	mu   sync.Mutex
+	mu   sync.RWMutex
 }
 
 func NewTable() Table {
@@ -28,10 +28,13 @@ func NewTable() Table {
 
 func (t *Table) AddValue(row string, column string, value int) error {
 	key := NewTwoStringKey(row, column)
+	t.mu.Lock()
 	_, ok := t.data[key]
+	t.mu.Unlock()
 	if ok {
 		return fmt.Errorf("value row: %s, column: %s", row, column)
 	}
+
 	t.mu.Lock()
 	t.data[key] = value
 	t.mu.Unlock()
@@ -59,9 +62,8 @@ func (t *Table) Row(row string) map[string]int {
 }
 
 func (t *Table) sortHeaders(headers []string) []string {
-	headersSlice := sort.StringSlice(headers)
-	headersSlice.Sort()
-	return headersSlice
+	sort.Strings(headers)
+	return headers
 }
 
 func (t *Table) RowHeaders() []string {

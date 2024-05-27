@@ -24,5 +24,6 @@ type OutputData struct {
 }
 
 func (o *OutputData) Day() string {
-	return GetFileName(o.DownloadedAt)
+	filename := GetFileName(o.DownloadedAt) // data_2024_05_20.json
+	return filename[5:15]
 }
