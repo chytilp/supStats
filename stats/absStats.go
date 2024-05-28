@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math"
 	"sort"
-	"time"
 )
 
 type Day string
@@ -78,16 +77,4 @@ func (l *LanguageRow) Max() int {
 		}
 	}
 	return max
-}
-
-type StatInput struct {
-	DateFrom  time.Time
-	DateTo    time.Time
-	Tech      Technology
-	Max       bool
-	Min       bool
-	Mean      bool
-	Median    bool
-	languages *map[Language]LanguageRow
-	table     *Table
 }
