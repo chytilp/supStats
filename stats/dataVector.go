@@ -12,12 +12,17 @@ type Number interface {
 }
 
 type Vector[T Number] struct {
-	Label  string
-	values []T
+	Label         string
+	values        []T
+	decimalPLaces int
 }
 
-func NewVector[T Number](label string, values []T) Vector[T] {
-	return Vector[T]{Label: label, values: values}
+func NewVector[T Number](label string, values []T, optionalParams ...int) Vector[T] {
+	decimalPlaces := 0
+	if len(optionalParams) > 0 {
+		decimalPlaces = optionalParams[0]
+	}
+	return Vector[T]{Label: label, values: values, decimalPLaces: decimalPlaces}
 }
 
 func sortSlice[T Number](s []T) {
@@ -52,7 +57,8 @@ func (v *Vector[T]) Mean() T {
 		sum += value
 	}
 	mean := float64(sum) / float64(len(v.values))
-	roundedMean := math.Round(mean)
+	placesConstant := int(math.Pow10(v.decimalPLaces))
+	roundedMean := math.Round(mean*float64(placesConstant)) / float64(placesConstant)
 	return T(roundedMean)
 }
 
@@ -80,5 +86,7 @@ func (v *Vector[T]) Median() T {
 		return values[middleIndexes[0]]
 	}
 	avg := float64(values[middleIndexes[0]]+values[middleIndexes[1]]) / float64(2)
-	return T(avg)
+	placesConstant := int(math.Pow10(v.decimalPLaces))
+	roundedAvg := math.Round(avg*float64(placesConstant)) / float64(placesConstant)
+	return T(roundedAvg)
 }
