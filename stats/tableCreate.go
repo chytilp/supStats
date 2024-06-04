@@ -22,15 +22,15 @@ const (
 	Mobile
 )
 
-type TableCreate struct {
+type TableCreate[T Number] struct {
 	DateFrom time.Time
 	DateTo   time.Time
 	Tech     Technology
 	Config   *common.Config
-	table    *Table
+	table    *Table[T]
 }
 
-func (t *TableCreate) folderList() []string {
+func (t *TableCreate[T]) folderList() []string {
 	months := []string{}
 	first := time.Date(t.DateFrom.Year(), t.DateFrom.Month(), 1, 0, 0, 0, 0, time.Local)
 	last := time.Date(t.DateTo.Year(), t.DateTo.Month(), 1, 0, 0, 0, 0, time.Local)
@@ -42,14 +42,14 @@ func (t *TableCreate) folderList() []string {
 	return months
 }
 
-func (t *TableCreate) includeFile(filename string, firstDay int, lastDay int) bool {
+func (t *TableCreate[T]) includeFile(filename string, firstDay int, lastDay int) bool {
 	parts := strings.Split(filename, ".")
 	parts2 := strings.Split(parts[0], "_")
 	num, _ := strconv.Atoi(parts2[3])
 	return num >= firstDay && num <= lastDay
 }
 
-func (t *TableCreate) folderFiles(absFolder string, firstDay int, lastDay int) (*[]string, error) {
+func (t *TableCreate[T]) folderFiles(absFolder string, firstDay int, lastDay int) (*[]string, error) {
 	folder, err := os.Open(absFolder)
 	if err != nil {
 		fmt.Println(err)
@@ -69,7 +69,7 @@ func (t *TableCreate) folderFiles(absFolder string, firstDay int, lastDay int) (
 	return &absFiles, nil
 }
 
-func (t *TableCreate) daysInMonth(folder string) int {
+func (t *TableCreate[T]) daysInMonth(folder string) int {
 	parts := strings.Split(folder, "-")
 	year, _ := strconv.Atoi(parts[0])
 	month, _ := strconv.Atoi(parts[1])
@@ -79,12 +79,12 @@ func (t *TableCreate) daysInMonth(folder string) int {
 	return dt2.Day()
 }
 
-func (t *TableCreate) correctFileFormat(fileName string) bool {
+func (t *TableCreate[T]) correctFileFormat(fileName string) bool {
 	r, _ := regexp.Compile(`^data_([0-9]{4})_([0-9]{2})_([0-9]{2})\.json$`)
 	return r.MatchString(fileName)
 }
 
-func (t *TableCreate) fileList() (*[]string, error) {
+func (t *TableCreate[T]) fileList() (*[]string, error) {
 	allFiles := []string{}
 	var absFolder string
 	var err error
@@ -119,8 +119,8 @@ func (t *TableCreate) fileList() (*[]string, error) {
 	return &allFiles, nil
 }
 
-func (t *TableCreate) ReadData(inclParent bool) error {
-	table := NewTable()
+func (t *TableCreate[T]) ReadData(inclParent bool) error {
+	table := NewTable[T]()
 	t.table = &table
 	// read files
 	files, err := t.fileList()
@@ -146,7 +146,7 @@ func (t *TableCreate) ReadData(inclParent bool) error {
 	return nil
 }
 
-func (t *TableCreate) readFile(path string, inclParent bool, wg *sync.WaitGroup, errChan chan<- error) {
+func (t *TableCreate[T]) readFile(path string, inclParent bool, wg *sync.WaitGroup, errChan chan<- error) {
 	data, err := request.UnmarshalFromFile[request.OutputData](path)
 	if err != nil {
 		errChan <- fmt.Errorf("UnmarshalFromFile - error in goroutine processing file: %s, err: %v", path, err)
@@ -163,14 +163,14 @@ func (t *TableCreate) readFile(path string, inclParent bool, wg *sync.WaitGroup,
 	}
 	dayOfData := data.Day()
 	if inclParent {
-		err = t.table.AddValue(root.Name, dayOfData, root.OfferCount)
+		err = t.table.AddValue(root.Name, dayOfData, T(root.OfferCount))
 		if err != nil {
 			errChan <- fmt.Errorf("AddValue - error in goroutine processing file: %s, err: %v", path, err)
 			return
 		}
 	}
 	for _, child := range root.Children {
-		err = t.table.AddValue(child.Name, dayOfData, child.OfferCount)
+		err = t.table.AddValue(child.Name, dayOfData, T(child.OfferCount))
 		if err != nil {
 			errChan <- fmt.Errorf("AddValue - error in goroutine processing file: %s, err: %v", path, err)
 			return
@@ -180,6 +180,6 @@ func (t *TableCreate) readFile(path string, inclParent bool, wg *sync.WaitGroup,
 	wg.Done()
 }
 
-func (t *TableCreate) Table() *Table {
+func (t *TableCreate[T]) Table() *Table[T] {
 	return t.table
 }

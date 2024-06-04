@@ -9,7 +9,7 @@ import (
 )
 
 func TestTableAddValue(t *testing.T) {
-	table := NewTable()
+	table := NewTable[int]()
 	table.AddValue("java", "2024-05-01", 1)
 	table.AddValue("java", "2024-05-02", 2)
 	table.AddValue("java", "2024-05-03", 3)
@@ -23,7 +23,7 @@ func TestTableAddValue(t *testing.T) {
 }
 
 func TestTableRowHeaders(t *testing.T) {
-	table := NewTable()
+	table := NewTable[int]()
 	table.AddValue("java", "2024-05-01", 1)
 	table.AddValue("c#", "2024-05-01", 2)
 	table.AddValue("python", "2024-05-01", 3)
@@ -40,7 +40,7 @@ func TestTableRowHeaders(t *testing.T) {
 }
 
 func TestTableColumnHeaders(t *testing.T) {
-	table := NewTable()
+	table := NewTable[int]()
 	table.AddValue("java", "2024-05-02", 4)
 	table.AddValue("java", "2024-05-03", 5)
 	table.AddValue("java", "2024-05-01", 1)

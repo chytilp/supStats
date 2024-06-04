@@ -25,7 +25,7 @@ func main() {
 		log.Fatalln(err.Error())
 	}
 	fmt.Println("Saved")*/
-	tableCreate := stats.TableCreate{
+	tableCreate := stats.TableCreate[int]{
 		DateFrom: time.Date(2024, time.May, 1, 0, 0, 0, 0, time.Local),
 		DateTo:   time.Date(2024, time.May, 31, 0, 0, 0, 0, time.Local),
 		Tech:     stats.Frontend,
