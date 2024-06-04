@@ -7,7 +7,7 @@ import (
 )
 
 func TestTableDisplayLines4Print(t *testing.T) {
-	table := NewTable()
+	table := NewTable[int]()
 	table.AddValue("java", "2024-05-02", 4)
 	table.AddValue("java", "2024-05-03", 5)
 	table.AddValue("java", "2024-05-01", 1)

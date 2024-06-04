@@ -5,15 +5,15 @@ import (
 	"strings"
 )
 
-type TableDisplay struct {
-	table *Table
+type TableDisplay[T Number] struct {
+	table *Table[T]
 }
 
-func NewDisplay(table *Table) TableDisplay {
-	return TableDisplay{table: table}
+func NewDisplay[T Number](table *Table[T]) TableDisplay[T] {
+	return TableDisplay[T]{table: table}
 }
 
-func (t *TableDisplay) Lines4Print() []string {
+func (t *TableDisplay[T]) Lines4Print() []string {
 	langs := t.table.RowHeaders()
 	maxLen := 0
 	for _, lang := range langs {
@@ -34,14 +34,14 @@ func (t *TableDisplay) Lines4Print() []string {
 		values := t.table.Row(lang)
 		strValues := make([]string, 0, len(values))
 		for _, day := range days {
-			strValues = append(strValues, fmt.Sprintf("%d", values[day]))
+			strValues = append(strValues, fmt.Sprintf("%v", values[day]))
 		}
 		lines = append(lines, t.formatRow(lang, strValues, maxLen, otherWidth))
 	}
 	return lines
 }
 
-func (t *TableDisplay) charactersForGap(totalChars int, textChars int, gapInBeginning bool) []string {
+func (t *TableDisplay[T]) charactersForGap(totalChars int, textChars int, gapInBeginning bool) []string {
 	if gapInBeginning {
 		return []string{strings.Repeat(" ", totalChars-textChars)}
 	} else {
@@ -63,7 +63,7 @@ func (t *TableDisplay) charactersForGap(totalChars int, textChars int, gapInBegi
 	}
 }
 
-func (t *TableDisplay) formatRow(firstColumn string, otherColumns []string, firstWidth int, otherWidth int) string {
+func (t *TableDisplay[T]) formatRow(firstColumn string, otherColumns []string, firstWidth int, otherWidth int) string {
 	s := firstColumn + t.charactersForGap(firstWidth, len(firstColumn), true)[0] + "|"
 	for _, column := range otherColumns {
 		gaps := t.charactersForGap(otherWidth, len(column), false)

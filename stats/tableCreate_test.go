@@ -40,8 +40,8 @@ func createFiles(rootFolder string, files map[string][]string) error {
 	return nil
 }
 
-func createTableCreate(dateFrom time.Time, dateTo time.Time, config *common.Config) TableCreate {
-	return TableCreate{
+func createTableCreate[T Number](dateFrom time.Time, dateTo time.Time, config *common.Config) TableCreate[T] {
+	return TableCreate[T]{
 		DateFrom: dateFrom,
 		DateTo:   dateTo,
 		Tech:     Frontend,
@@ -92,9 +92,9 @@ func TestTableCreateFileList(t *testing.T) {
 	config := common.Config{
 		DataFolder: tmpDir,
 	}
-	var tableCreate TableCreate
+	var tableCreate TableCreate[int]
 	for _, test := range testCases {
-		tableCreate = createTableCreate(createDate(test.fromDate), createDate(test.toDate), &config)
+		tableCreate = createTableCreate[int](createDate(test.fromDate), createDate(test.toDate), &config)
 		tmp, err := tableCreate.fileList()
 		if err != nil {
 			t.Fatal(err)
@@ -103,6 +103,5 @@ func TestTableCreateFileList(t *testing.T) {
 		for index, f := range test.expectedFiles {
 			assert.Equal(t, shortenPath(soubory[index]), f)
 		}
-
 	}
 }
