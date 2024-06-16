@@ -76,15 +76,16 @@ func GetFileName(date time.Time) string {
 	return fmt.Sprintf("data_%04d_%02d_%02d.json", date.Year(), date.Month(), date.Day())
 }
 
-func MarshalToFile(data OutputData, config *common.Config) error {
+func MarshalToFile(data OutputData, config *common.Config) (*string, error) {
 	content, err := json.MarshalIndent(data, "", " ")
 	if err != nil {
-		return err
+		return nil, err
 	}
-	absPath := config.DataFolder + GetWholePath(data.DownloadedAt)
+	filePath := GetWholePath(data.DownloadedAt)
+	absPath := config.DataFolder + filePath
 	err = os.WriteFile(absPath, content, 0644)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return &filePath, nil
 }
