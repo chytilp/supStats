@@ -20,7 +20,21 @@ const (
 	Frontend Technology = iota
 	Backend
 	Mobile
+	Unknown
 )
+
+func TechnologyFromString(stringTechnology string) Technology {
+	switch stringTechnology {
+	case "fe":
+		return Frontend
+	case "be":
+		return Backend
+	case "mb":
+		return Mobile
+	default:
+		return Unknown
+	}
+}
 
 type TableCreate[T Number] struct {
 	DateFrom time.Time
