@@ -8,6 +8,7 @@ import (
 
 	"github.com/chytilp/supStats/commands"
 	"github.com/chytilp/supStats/common"
+	"github.com/chytilp/supStats/stats"
 )
 
 func main() {
@@ -64,8 +65,13 @@ func main() {
 
 	case "table":
 		tableCmd.Parse(os.Args[2:])
-		fmt.Println("table subcommand")
-		fmt.Printf("type: %s, fromTo: %s, columns: %d, aggColumns: %t\n", tableType, fromTo, columns, aggColumns)
+		technology := stats.TechnologyFromString(tableType)
+		tableCommand := commands.NewTableCommand(config, technology, fromTo, columns, aggColumns)
+		err := tableCommand.Run()
+		if err != nil {
+			fmt.Println("err in DownloadCommand")
+			log.Fatalln(err.Error())
+		}
 
 	case "reltable":
 		relTableCmd.Parse(os.Args[2:])
