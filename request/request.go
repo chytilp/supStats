@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path"
 	"time"
 
 	"github.com/chytilp/supStats/common"
@@ -64,28 +65,16 @@ func UnmarshalFromFile[T any](filepath string) (*T, error) {
 	return &responseData, nil
 }
 
-func GetWholePath(date time.Time) string {
-	return GetFolder(date) + GetFileName(date)
-}
-
-func GetFolder(date time.Time) string {
-	return fmt.Sprintf("%04d-%02d/", date.Year(), date.Month())
-}
-
-func GetFileName(date time.Time) string {
-	return fmt.Sprintf("data_%04d_%02d_%02d.json", date.Year(), date.Month(), date.Day())
-}
-
 func MarshalToFile(data OutputData, config *common.Config) (*string, error) {
 	content, err := json.MarshalIndent(data, "", " ")
 	if err != nil {
 		return nil, err
 	}
-	filePath := GetWholePath(data.DownloadedAt)
-	absPath := config.DataFolder + filePath
+	filePath := common.GetWholePath(data.DownloadedAt)
+	absPath := path.Join(config.DataFolder, filePath)
 	err = os.WriteFile(absPath, content, 0644)
 	if err != nil {
 		return nil, err
 	}
-	return &filePath, nil
+	return &absPath, nil
 }
