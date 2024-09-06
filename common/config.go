@@ -3,6 +3,7 @@ package common
 import (
 	"io"
 	"os"
+	"path"
 
 	toml "github.com/pelletier/go-toml"
 )
@@ -43,4 +44,15 @@ func read() *Config {
 		panic(err)
 	}
 	return &config
+}
+
+func (c *Config) GetFilePath(old bool, filename string) string {
+	var baseFolder string
+	if old {
+		baseFolder = c.OldDataFolder
+	} else {
+		baseFolder = c.DataFolder
+	}
+	date, _ := GetFileDate(filename)
+	return path.Join(baseFolder, GetFolder(*date), filename)
 }

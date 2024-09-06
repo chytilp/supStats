@@ -1,0 +1,877 @@
+[
+  {
+    "id": 1,
+    "name": "V\u00fdvoj",
+    "count": 447,
+    "children": [
+      {
+        "id": 2,
+        "name": "Back-End",
+        "count": 164,
+        "children": [
+          {
+            "id": 3,
+            "name": "Java",
+            "count": 28,
+            "children": []
+          },
+          {
+            "id": 4,
+            "name": "PHP",
+            "count": 37,
+            "children": []
+          },
+          {
+            "id": 118,
+            "name": "Node.js",
+            "count": 27,
+            "children": []
+          },
+          {
+            "id": 6,
+            "name": ".NET",
+            "count": 19,
+            "children": []
+          },
+          {
+            "id": 7,
+            "name": "Python",
+            "count": 42,
+            "children": []
+          },
+          {
+            "id": 8,
+            "name": "C#",
+            "count": 12,
+            "children": []
+          },
+          {
+            "id": 9,
+            "name": "C/C++",
+            "count": 7,
+            "children": []
+          },
+          {
+            "id": 10,
+            "name": "Ruby",
+            "count": 5,
+            "children": []
+          },
+          {
+            "id": 11,
+            "name": "Go",
+            "count": 9,
+            "children": []
+          },
+          {
+            "id": 12,
+            "name": "Unity",
+            "count": 3,
+            "children": []
+          },
+          {
+            "id": 13,
+            "name": "Perl",
+            "count": 0,
+            "children": []
+          },
+          {
+            "id": 14,
+            "name": "Erlang",
+            "count": 0,
+            "children": []
+          },
+          {
+            "id": 15,
+            "name": "Scala",
+            "count": 4,
+            "children": []
+          },
+          {
+            "id": 16,
+            "name": "R",
+            "count": 1,
+            "children": []
+          },
+          {
+            "id": 145,
+            "name": "Rust",
+            "count": 2,
+            "children": []
+          },
+          {
+            "id": 146,
+            "name": "F#",
+            "count": 0,
+            "children": []
+          },
+          {
+            "id": 147,
+            "name": "Kotlin",
+            "count": 10,
+            "children": []
+          }
+        ]
+      },
+      {
+        "id": 17,
+        "name": "Front-End/K\u00f3der",
+        "count": 96,
+        "children": [
+          {
+            "id": 119,
+            "name": "HTML/CSS",
+            "count": 32,
+            "children": []
+          },
+          {
+            "id": 20,
+            "name": "JavaScript",
+            "count": 60,
+            "children": []
+          },
+          {
+            "id": 148,
+            "name": "TypeScript",
+            "count": 45,
+            "children": []
+          }
+        ]
+      },
+      {
+        "id": 138,
+        "name": "Datab\u00e1ze",
+        "count": 87,
+        "children": [
+          {
+            "id": 139,
+            "name": "SQL",
+            "count": 49,
+            "children": []
+          },
+          {
+            "id": 140,
+            "name": "MySQL",
+            "count": 22,
+            "children": []
+          },
+          {
+            "id": 141,
+            "name": "Oracle PL/SQL",
+            "count": 6,
+            "children": []
+          },
+          {
+            "id": 142,
+            "name": "PostgreSQL",
+            "count": 20,
+            "children": []
+          },
+          {
+            "id": 143,
+            "name": "MS SQL",
+            "count": 14,
+            "children": []
+          },
+          {
+            "id": 144,
+            "name": "MongoDB",
+            "count": 9,
+            "children": []
+          }
+        ]
+      },
+      {
+        "id": 22,
+        "name": "DevOps",
+        "count": 66,
+        "children": [
+          {
+            "id": 23,
+            "name": "Helpdesk",
+            "count": 17,
+            "children": []
+          },
+          {
+            "id": 24,
+            "name": "Spr\u00e1va server\u016f",
+            "count": 28,
+            "children": []
+          },
+          {
+            "id": 28,
+            "name": "Integrace",
+            "count": 19,
+            "children": []
+          },
+          {
+            "id": 149,
+            "name": "Linux admin",
+            "count": 21,
+            "children": []
+          },
+          {
+            "id": 150,
+            "name": "Windows admin",
+            "count": 13,
+            "children": []
+          },
+          {
+            "id": 151,
+            "name": "Cloud admin",
+            "count": 15,
+            "children": []
+          }
+        ]
+      },
+      {
+        "id": 30,
+        "name": "Testov\u00e1n\u00ed",
+        "count": 32,
+        "children": [
+          {
+            "id": 155,
+            "name": "Manu\u00e1ln\u00ed testov\u00e1n\u00ed",
+            "count": 20,
+            "children": []
+          },
+          {
+            "id": 156,
+            "name": "Automatizovan\u00e9 testov\u00e1n\u00ed",
+            "count": 17,
+            "children": []
+          },
+          {
+            "id": 157,
+            "name": "Test analytik",
+            "count": 11,
+            "children": []
+          }
+        ]
+      },
+      {
+        "id": 31,
+        "name": "Mobiln\u00ed v\u00fdvoj",
+        "count": 34,
+        "children": [
+          {
+            "id": 32,
+            "name": "Android",
+            "count": 16,
+            "children": []
+          },
+          {
+            "id": 33,
+            "name": "iOS",
+            "count": 12,
+            "children": []
+          },
+          {
+            "id": 35,
+            "name": "Xamarin",
+            "count": 1,
+            "children": []
+          },
+          {
+            "id": 158,
+            "name": "Flutter",
+            "count": 3,
+            "children": []
+          },
+          {
+            "id": 159,
+            "name": "React Native",
+            "count": 9,
+            "children": []
+          }
+        ]
+      },
+      {
+        "id": 152,
+        "name": "Hardware & Firmware",
+        "count": 13,
+        "children": []
+      },
+      {
+        "id": 29,
+        "name": "IT Security",
+        "count": 8,
+        "children": []
+      },
+      {
+        "id": 36,
+        "name": "Software architekt",
+        "count": 10,
+        "children": []
+      },
+      {
+        "id": 153,
+        "name": "IT Konzultant",
+        "count": 43,
+        "children": []
+      },
+      {
+        "id": 124,
+        "name": "Project Manager",
+        "count": 48,
+        "children": []
+      },
+      {
+        "id": 125,
+        "name": "Product Manager a Product Owner",
+        "count": 36,
+        "children": []
+      },
+      {
+        "id": 37,
+        "name": "Scrum Master",
+        "count": 5,
+        "children": []
+      },
+      {
+        "id": 160,
+        "name": "Design",
+        "count": 42,
+        "children": [
+          {
+            "id": 161,
+            "name": "UX",
+            "count": 22,
+            "children": []
+          },
+          {
+            "id": 162,
+            "name": "UI",
+            "count": 13,
+            "children": []
+          },
+          {
+            "id": 163,
+            "name": "Webdesign",
+            "count": 8,
+            "children": []
+          },
+          {
+            "id": 164,
+            "name": "Grafika",
+            "count": 13,
+            "children": []
+          },
+          {
+            "id": 165,
+            "name": "3D grafika",
+            "count": 4,
+            "children": []
+          },
+          {
+            "id": 166,
+            "name": "Animation",
+            "count": 4,
+            "children": []
+          },
+          {
+            "id": 167,
+            "name": "Product design",
+            "count": 11,
+            "children": []
+          }
+        ]
+      },
+      {
+        "id": 154,
+        "name": "3D tisk",
+        "count": 0,
+        "children": []
+      },
+      {
+        "id": 168,
+        "name": "Hern\u00ed v\u00fdvoj",
+        "count": 3,
+        "children": []
+      },
+      {
+        "id": 169,
+        "name": "Um\u011bl\u00e1 inteligence (AI)",
+        "count": 26,
+        "children": []
+      },
+      {
+        "id": 170,
+        "name": "Machine learning",
+        "count": 15,
+        "children": []
+      },
+      {
+        "id": 171,
+        "name": "Virtu\u00e1ln\u00ed / roz\u0161\u00ed\u0159en\u00e1 realita (VR, AR)",
+        "count": 2,
+        "children": []
+      },
+      {
+        "id": 172,
+        "name": "Internet v\u011bc\u00ed (IoT)",
+        "count": 5,
+        "children": []
+      },
+      {
+        "id": 173,
+        "name": "Blockchain",
+        "count": 4,
+        "children": []
+      },
+      {
+        "id": 174,
+        "name": "No code",
+        "count": 9,
+        "children": []
+      },
+      {
+        "id": 175,
+        "name": "Tech writer",
+        "count": 2,
+        "children": []
+      },
+      {
+        "id": 176,
+        "name": "Embedded systems",
+        "count": 4,
+        "children": []
+      }
+    ]
+  },
+  {
+    "id": 39,
+    "name": "Marketing a obchod",
+    "count": 346,
+    "children": [
+      {
+        "id": 40,
+        "name": "Marketing",
+        "count": 153,
+        "children": [
+          {
+            "id": 42,
+            "name": "Asistent marketingu",
+            "count": 11,
+            "children": []
+          },
+          {
+            "id": 43,
+            "name": "Brand Manager",
+            "count": 11,
+            "children": []
+          },
+          {
+            "id": 44,
+            "name": "CMO",
+            "count": 9,
+            "children": []
+          },
+          {
+            "id": 45,
+            "name": "Community Manager",
+            "count": 10,
+            "children": []
+          },
+          {
+            "id": 46,
+            "name": "Content specialista",
+            "count": 30,
+            "children": []
+          },
+          {
+            "id": 47,
+            "name": "Copywriter",
+            "count": 19,
+            "children": []
+          },
+          {
+            "id": 49,
+            "name": "E-mail marketing",
+            "count": 18,
+            "children": []
+          },
+          {
+            "id": 50,
+            "name": "Event Manager",
+            "count": 6,
+            "children": []
+          },
+          {
+            "id": 126,
+            "name": "Marketingov\u00fd analytik",
+            "count": 29,
+            "children": []
+          },
+          {
+            "id": 53,
+            "name": "Marketingov\u00fd konzultant",
+            "count": 27,
+            "children": []
+          },
+          {
+            "id": 127,
+            "name": "Marketing Manager",
+            "count": 35,
+            "children": []
+          },
+          {
+            "id": 55,
+            "name": "Marketingov\u00fd specialista",
+            "count": 68,
+            "children": []
+          },
+          {
+            "id": 56,
+            "name": "PPC",
+            "count": 41,
+            "children": []
+          },
+          {
+            "id": 57,
+            "name": "PR",
+            "count": 8,
+            "children": []
+          },
+          {
+            "id": 59,
+            "name": "RTB",
+            "count": 2,
+            "children": []
+          },
+          {
+            "id": 60,
+            "name": "Redaktor",
+            "count": 2,
+            "children": []
+          },
+          {
+            "id": 61,
+            "name": "SEO",
+            "count": 14,
+            "children": []
+          },
+          {
+            "id": 62,
+            "name": "Social Media",
+            "count": 43,
+            "children": []
+          },
+          {
+            "id": 63,
+            "name": "Specialista online marketingu",
+            "count": 55,
+            "children": []
+          },
+          {
+            "id": 64,
+            "name": "St\u00e1\u017e v marketingu",
+            "count": 3,
+            "children": []
+          },
+          {
+            "id": 68,
+            "name": "\u0160\u00e9fredaktor",
+            "count": 0,
+            "children": []
+          }
+        ]
+      },
+      {
+        "id": 69,
+        "name": "Obchod",
+        "count": 187,
+        "children": [
+          {
+            "id": 70,
+            "name": "Account Manager",
+            "count": 77,
+            "children": []
+          },
+          {
+            "id": 71,
+            "name": "Z\u00e1kaznick\u00fd servis",
+            "count": 70,
+            "children": []
+          },
+          {
+            "id": 72,
+            "name": "Obchodn\u00ed z\u00e1stupce",
+            "count": 70,
+            "children": []
+          },
+          {
+            "id": 73,
+            "name": "Business Developer",
+            "count": 61,
+            "children": []
+          },
+          {
+            "id": 74,
+            "name": "Konzultant",
+            "count": 47,
+            "children": []
+          }
+        ]
+      },
+      {
+        "id": 75,
+        "name": "Kreativa",
+        "count": 34,
+        "children": [
+          {
+            "id": 76,
+            "name": "Grafik",
+            "count": 16,
+            "children": []
+          },
+          {
+            "id": 78,
+            "name": "Product designer",
+            "count": 9,
+            "children": []
+          },
+          {
+            "id": 79,
+            "name": "Flash Developer",
+            "count": 0,
+            "children": []
+          },
+          {
+            "id": 80,
+            "name": "Foto / Video / Produkce",
+            "count": 9,
+            "children": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 81,
+    "name": "Analytika",
+    "count": 101,
+    "children": [
+      {
+        "id": 82,
+        "name": "BI/Business Analytik",
+        "count": 27,
+        "children": []
+      },
+      {
+        "id": 83,
+        "name": "Data Analytik",
+        "count": 44,
+        "children": []
+      },
+      {
+        "id": 84,
+        "name": "IT Analytik",
+        "count": 22,
+        "children": []
+      },
+      {
+        "id": 135,
+        "name": "Webov\u00fd analytik",
+        "count": 11,
+        "children": []
+      },
+      {
+        "id": 86,
+        "name": "Marketingov\u00fd analytik",
+        "count": 29,
+        "children": []
+      }
+    ]
+  },
+  {
+    "id": 87,
+    "name": "Management",
+    "count": 227,
+    "children": [
+      {
+        "id": 88,
+        "name": "Account Manager",
+        "count": 66,
+        "children": []
+      },
+      {
+        "id": 89,
+        "name": "Business Development Manager",
+        "count": 27,
+        "children": []
+      },
+      {
+        "id": 128,
+        "name": "Manager",
+        "count": 24,
+        "children": []
+      },
+      {
+        "id": 129,
+        "name": "Marketing Manager",
+        "count": 35,
+        "children": []
+      },
+      {
+        "id": 92,
+        "name": "Sales Manager",
+        "count": 39,
+        "children": []
+      },
+      {
+        "id": 93,
+        "name": "Scrum Master",
+        "count": 5,
+        "children": []
+      },
+      {
+        "id": 130,
+        "name": "Office Manager",
+        "count": 23,
+        "children": []
+      },
+      {
+        "id": 131,
+        "name": "Product Manager a Product Owner",
+        "count": 36,
+        "children": []
+      },
+      {
+        "id": 132,
+        "name": "Project Manager",
+        "count": 53,
+        "children": []
+      },
+      {
+        "id": 97,
+        "name": "Provozn\u00ed mana\u017eer",
+        "count": 8,
+        "children": []
+      },
+      {
+        "id": 99,
+        "name": "Top management (C-level)",
+        "count": 6,
+        "children": []
+      },
+      {
+        "id": 100,
+        "name": "Team Leader",
+        "count": 17,
+        "children": []
+      },
+      {
+        "id": 101,
+        "name": "Technick\u00fd mana\u017eer",
+        "count": 7,
+        "children": []
+      }
+    ]
+  },
+  {
+    "id": 102,
+    "name": "Administrativa a jin\u00e9",
+    "count": 170,
+    "children": [
+      {
+        "id": 103,
+        "name": "Administrativa",
+        "count": 138,
+        "children": [
+          {
+            "id": 133,
+            "name": "Office Manager",
+            "count": 25,
+            "children": []
+          },
+          {
+            "id": 104,
+            "name": "Back Office",
+            "count": 47,
+            "children": []
+          },
+          {
+            "id": 105,
+            "name": "Z\u00e1kaznick\u00e1 podpora",
+            "count": 63,
+            "children": []
+          },
+          {
+            "id": 106,
+            "name": "P\u0159eklady",
+            "count": 6,
+            "children": []
+          },
+          {
+            "id": 107,
+            "name": "Recep\u010dn\u00ed",
+            "count": 13,
+            "children": []
+          },
+          {
+            "id": 108,
+            "name": "N\u00e1kup a logistika",
+            "count": 10,
+            "children": []
+          },
+          {
+            "id": 109,
+            "name": "Pr\u00e1vo",
+            "count": 1,
+            "children": []
+          },
+          {
+            "id": 110,
+            "name": "Finance",
+            "count": 28,
+            "children": []
+          },
+          {
+            "id": 111,
+            "name": "\u00da\u010detnictv\u00ed",
+            "count": 14,
+            "children": []
+          }
+        ]
+      },
+      {
+        "id": 112,
+        "name": "HR",
+        "count": 25,
+        "children": [
+          {
+            "id": 113,
+            "name": "HR Generalista",
+            "count": 9,
+            "children": []
+          },
+          {
+            "id": 114,
+            "name": "Recruiter",
+            "count": 15,
+            "children": []
+          }
+        ]
+      },
+      {
+        "id": 115,
+        "name": "Lektor",
+        "count": 6,
+        "children": []
+      },
+      {
+        "id": 134,
+        "name": "Ostatn\u00ed",
+        "count": 19,
+        "children": []
+      }
+    ]
+  },
+  {
+    "id": 116,
+    "name": "Spoluzakladatel",
+    "count": 2,
+    "children": []
+  }
+]

@@ -50,7 +50,7 @@ func (t *TableCreate[T]) folderList() []string {
 	last := time.Date(t.DateTo.Year(), t.DateTo.Month(), 1, 0, 0, 0, 0, time.Local)
 	tmp := first
 	for tmp == last || tmp.Before(last) {
-		months = append(months, request.GetFolder(tmp))
+		months = append(months, common.GetFolder(tmp))
 		tmp = tmp.AddDate(0, 1, 0)
 	}
 	return months
