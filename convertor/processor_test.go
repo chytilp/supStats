@@ -77,10 +77,10 @@ func TestTransformFiles(t *testing.T) {
 	transformResult := convertor.TransformFiles(inputFiles)
 	defer removeTestFile(transformResult.OutputFiles[filename])
 	cwd, _ := filepath.Abs(".")
-	outputFilePath := path.Join(cwd, "data", "new", filename)
+	outputFilePath := path.Join(cwd, "data", "new", "2024-02", filename)
 	assert.Equal(t, len(transformResult.OutputFiles), 1)
 	assert.Equal(t, transformResult.OutputFiles[filename], outputFilePath)
 	assert.Equal(t, len(transformResult.Errors), 1)
-	assert.Equal(t, transformResult.Errors[badFile], errors.New("error"))
+	assert.Equal(t, transformResult.Errors[badFile], errors.New("wrong filename format: blbost.json"))
 	assert.Equal(t, len(transformResult.InputFiles), 2)
 }

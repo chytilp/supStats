@@ -80,8 +80,15 @@ func main() {
 
 	case "convert":
 		convertCmd.Parse(os.Args[2:])
-		fmt.Println("convert subcommand")
-		fmt.Printf("input: %s, output: %s\n", inputDir, outputDir)
+		convertCommand := commands.NewConvertCommand(config, inputDir, outputDir)
+		converted, err := convertCommand.Run()
+		if err != nil {
+			fmt.Println("err in ConvertCommand")
+			log.Fatalln(err.Error())
+		}
+		for _, convertedFile := range converted {
+			fmt.Printf("file: %s was successfully converted.\n", convertedFile)
+		}
 
 	default:
 		fmt.Println("expected 'download', 'table', 'relTable' or 'convert' subcommands")

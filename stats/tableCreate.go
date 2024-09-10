@@ -3,7 +3,6 @@ package stats
 import (
 	"fmt"
 	"os"
-	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -76,7 +75,7 @@ func (t *TableCreate[T]) folderFiles(absFolder string, firstDay int, lastDay int
 	}
 	absFiles := []string{}
 	for _, v := range files {
-		if !v.IsDir() && t.correctFileFormat(v.Name()) && t.includeFile(v.Name(), firstDay, lastDay) {
+		if !v.IsDir() && common.IsCorrectFileFormat(v.Name()) && t.includeFile(v.Name(), firstDay, lastDay) {
 			absFiles = append(absFiles, v.Name())
 		}
 	}
@@ -91,11 +90,6 @@ func (t *TableCreate[T]) daysInMonth(folder string) int {
 	dt := time.Date(year, m, 1, 0, 0, 0, 0, time.UTC)
 	dt2 := dt.AddDate(0, 0, -1)
 	return dt2.Day()
-}
-
-func (t *TableCreate[T]) correctFileFormat(fileName string) bool {
-	r, _ := regexp.Compile(`^data_([0-9]{4})_([0-9]{2})_([0-9]{2})\.json$`)
-	return r.MatchString(fileName)
 }
 
 func (t *TableCreate[T]) fileList() (*[]string, error) {
