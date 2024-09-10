@@ -46,13 +46,16 @@ func read() *Config {
 	return &config
 }
 
-func (c *Config) GetFilePath(old bool, filename string) string {
+func (c *Config) GetFilePath(old bool, filename string) (string, error) {
 	var baseFolder string
 	if old {
 		baseFolder = c.OldDataFolder
 	} else {
 		baseFolder = c.DataFolder
 	}
-	date, _ := GetFileDate(filename)
-	return path.Join(baseFolder, GetFolder(*date), filename)
+	date, err := GetFileDate(filename)
+	if err != nil {
+		return "", err
+	}
+	return path.Join(baseFolder, GetFolder(*date), filename), nil
 }

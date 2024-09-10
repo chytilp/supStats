@@ -13,6 +13,10 @@ type Convertor struct {
 	config *common.Config
 }
 
+func NewConvertor(config *common.Config) Convertor {
+	return Convertor{config: config}
+}
+
 type TransformationResult struct {
 	InputFiles  []string
 	OutputFiles map[string]string
@@ -20,7 +24,10 @@ type TransformationResult struct {
 }
 
 func (c *Convertor) TransformFile(oldFilename string) (string, error) {
-	oldFilePath := c.config.GetFilePath(true, oldFilename)
+	oldFilePath, err := c.config.GetFilePath(true, oldFilename)
+	if err != nil {
+		return "", err
+	}
 	oldFormatData, err := c.readDataFile(oldFilePath)
 	if err != nil {
 		return "", err
