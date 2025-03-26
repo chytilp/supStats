@@ -11,11 +11,16 @@ import (
 var config *Config
 
 type Config struct {
-	BackendUrl    string
-	FrontendUrl   string
-	MobileUrl     string
-	DataFolder    string
-	OldDataFolder string
+	BackendUrl        string
+	FrontendUrl       string
+	MobileUrl         string
+	DataFolder        string
+	OldDataFolder     string
+	CategoryBaseUrl   string
+	TechnologyBaseUrl string
+	HeaderHost        string
+	HeaderReferer     string
+	HeaderOrigin      string
 }
 
 func GetConfig() *Config {

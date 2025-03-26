@@ -55,10 +55,10 @@ func main() {
 
 	switch os.Args[1] {
 	case "download":
-		downloadCmd := commands.NewDownloadCommand(config)
+		downloadCmd := commands.NewDownloadV2Command(config)
 		filePath, err := downloadCmd.Run()
 		if err != nil {
-			fmt.Println("err in DownloadCommand")
+			fmt.Println("err in DownloadV2Command")
 			log.Fatalln(err.Error())
 		}
 		fmt.Printf("File %s was saved\n", *filePath)
