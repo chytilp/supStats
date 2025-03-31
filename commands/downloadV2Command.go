@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"sync"
 	"time"
 
 	"github.com/chytilp/supStats/common"
@@ -16,16 +17,17 @@ type ResponseModel struct {
 	TotalItems int `json:"totalItems"`
 }
 
-type OutputModel struct {
-	Parent bool
-	Slug   string
-	Count  int
-}
-
 type DownloadV2Command struct {
 	config          *common.Config
 	categorySlugs   []string
 	technologySlugs []string
+}
+
+type OutputModel struct {
+	IsCategory bool
+	Slug       string
+	Count      int
+	Error      *error
 }
 
 type FileContentItem struct {
@@ -37,6 +39,20 @@ type FileContent struct {
 	Categories   []FileContentItem `json:"categories"`
 	Technologies []FileContentItem `json:"technologies"`
 	DownloadedAt time.Time         `json:"downloaded"`
+}
+
+func (o *OutputModel) IsValid() bool {
+	return o.Error == nil
+}
+
+type InputModel struct {
+	Slug       string
+	IsCategory bool
+	BaseUrl    string
+}
+
+func (i *InputModel) GetUrl() string {
+	return i.BaseUrl + i.Slug
 }
 
 func NewDownloadV2Command(config *common.Config) DownloadV2Command {
@@ -58,27 +74,54 @@ func NewDownloadV2Command(config *common.Config) DownloadV2Command {
 	return DownloadV2Command{config: config, categorySlugs: category, technologySlugs: technology}
 }
 
+func (d *DownloadV2Command) createInputs() []InputModel {
+	inputs := make([]InputModel, len(d.categorySlugs)+len(d.technologySlugs))
+	var index int = 0
+	for _, categorySlug := range d.categorySlugs {
+		inputs[index] = InputModel{Slug: categorySlug, IsCategory: true, BaseUrl: d.config.CategoryBaseUrl}
+		index += 1
+	}
+	for _, technologySlug := range d.technologySlugs {
+		inputs[index] = InputModel{Slug: technologySlug, IsCategory: false, BaseUrl: d.config.TechnologyBaseUrl}
+		index += 1
+	}
+	return inputs
+}
+
 func (d *DownloadV2Command) Run() (*string, error) {
-	outputItems := []OutputModel{}
-	for _, slug := range d.categorySlugs {
-		output, err := d.processOneItem(slug, true)
-		if err != nil {
-			fmt.Printf("Error during process slug: %s\n", slug)
-			return nil, err
+	inputs := d.createInputs()
+
+	inputChan := make(chan InputModel, 4)
+	outputChan := make(chan OutputModel)
+
+	results := make([]OutputModel, len(d.categorySlugs)+len(d.technologySlugs))
+	var wg sync.WaitGroup
+	wg.Add(4)
+
+	go d.process(inputChan, outputChan, "routine-1", &wg)
+	go d.process(inputChan, outputChan, "routine-2", &wg)
+	go d.process(inputChan, outputChan, "routine-3", &wg)
+	go d.process(inputChan, outputChan, "routine-4", &wg)
+
+	go func() {
+		wg.Wait()
+		close(outputChan)
+	}()
+
+	go feed(inputChan, inputs)
+
+	var index int = 0
+	for output := range outputChan {
+		if output.IsValid() {
+			fmt.Printf("Result: %v\n", output)
+			results[index] = output
+			index += 1
+		} else {
+			fmt.Printf("Url: %s, Error: %v\n", output.Slug, *output.Error)
 		}
-		outputItems = append(outputItems, *output)
-		fmt.Printf("Category: %s done\n", slug)
 	}
-	for _, slug := range d.technologySlugs {
-		output, err := d.processOneItem(slug, false)
-		if err != nil {
-			fmt.Printf("Error during process slug: %s\n", slug)
-			return nil, err
-		}
-		outputItems = append(outputItems, *output)
-		fmt.Printf("Technology: %s done\n", slug)
-	}
-	filePath, err := d.marshalToFile(outputItems)
+
+	filePath, err := d.marshalToFile(results)
 	if err != nil {
 		fmt.Println("err in MarshalToFile")
 		return nil, err
@@ -86,36 +129,29 @@ func (d *DownloadV2Command) Run() (*string, error) {
 	return filePath, nil
 }
 
-func (d *DownloadV2Command) marshalToFile(items []OutputModel) (*string, error) {
-	categoryItems := []FileContentItem{}
-	technologyItems := []FileContentItem{}
-	for _, item := range items {
-		if item.Parent {
-			categoryItems = append(categoryItems, FileContentItem{Name: item.Slug, Count: item.Count})
-		} else {
-			if item.Slug == "c%2B%2B" {
-				item.Slug = "c++"
-			}
-			technologyItems = append(technologyItems, FileContentItem{Name: item.Slug, Count: item.Count})
+func (d *DownloadV2Command) process(inputChan <-chan InputModel, outputChan chan<- OutputModel, label string, wg *sync.WaitGroup) {
+	defer wg.Done()
+	var outputErr error
+	for input := range inputChan {
+		url := input.GetUrl()
+		fmt.Printf("Processor: %s works on url: %s\n", label, url)
+		data, err := d.sendRequest(url)
+		if err != nil {
+			outputErr = fmt.Errorf("error during send request: %s", err)
+			outputChan <- OutputModel{Slug: input.Slug, Error: &outputErr}
+			continue
 		}
+		result, err := d.parseResponse(data)
+		if err != nil {
+			outputErr = fmt.Errorf("error during parsing request data: %s", err)
+			outputChan <- OutputModel{Slug: input.Slug, Error: &outputErr}
+			continue
+		}
+		var respModel ResponseModel = *result
+		fmt.Printf("Processor: %s successfully finished url: %s\n", label, url)
+		outputChan <- OutputModel{Slug: input.Slug, Count: respModel.TotalItems, IsCategory: input.IsCategory}
 	}
-
-	fileData := FileContent{
-		Categories:   categoryItems,
-		Technologies: technologyItems,
-		DownloadedAt: time.Now(),
-	}
-	content, err := json.MarshalIndent(fileData, "", " ")
-	if err != nil {
-		return nil, err
-	}
-	filePath := common.GetWholePath(fileData.DownloadedAt)
-	absPath := path.Join(d.config.DataFolder, filePath)
-	err = os.WriteFile(absPath, content, 0644)
-	if err != nil {
-		return nil, err
-	}
-	return &absPath, nil
+	fmt.Printf("I am out of cyclus processor: %s\n", label)
 }
 
 func (d *DownloadV2Command) sendRequest(url string) ([]byte, error) {
@@ -159,26 +195,41 @@ func (d *DownloadV2Command) parseResponse(data []byte) (*ResponseModel, error) {
 	return &responseData, nil
 }
 
-func (d *DownloadV2Command) processOneItem(slug string, category bool) (*OutputModel, error) {
-	var url string
-	if category {
-		url = d.config.CategoryBaseUrl + slug
-	} else {
-		url = d.config.TechnologyBaseUrl + slug
+func feed(inputChan chan<- InputModel, inputs []InputModel) {
+	for _, input := range inputs {
+		inputChan <- input
 	}
-	data, err := d.sendRequest(url)
+	close(inputChan)
+}
+
+func (d *DownloadV2Command) marshalToFile(items []OutputModel) (*string, error) {
+	categoryItems := []FileContentItem{}
+	technologyItems := []FileContentItem{}
+	for _, item := range items {
+		if item.IsCategory {
+			categoryItems = append(categoryItems, FileContentItem{Name: item.Slug, Count: item.Count})
+		} else {
+			if item.Slug == "c%2B%2B" {
+				item.Slug = "c++"
+			}
+			technologyItems = append(technologyItems, FileContentItem{Name: item.Slug, Count: item.Count})
+		}
+	}
+
+	fileData := FileContent{
+		Categories:   categoryItems,
+		Technologies: technologyItems,
+		DownloadedAt: time.Now(),
+	}
+	content, err := json.MarshalIndent(fileData, "", " ")
 	if err != nil {
-		return nil, fmt.Errorf("error during send request: %s", err)
+		return nil, err
 	}
-	result, err := d.parseResponse(data)
+	filePath := common.GetWholePath(fileData.DownloadedAt)
+	absPath := path.Join(d.config.DataFolder, filePath)
+	err = os.WriteFile(absPath, content, 0644)
 	if err != nil {
-		fmt.Printf("Error during parsing request data: %s\n", err)
-		return nil, fmt.Errorf("error during parsing request data: %s", err)
+		return nil, err
 	}
-	var respModel ResponseModel = *result
-	return &OutputModel{
-		Parent: category,
-		Slug:   slug,
-		Count:  respModel.TotalItems,
-	}, nil
+	return &absPath, nil
 }
