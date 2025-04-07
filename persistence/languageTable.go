@@ -8,7 +8,7 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 
-	"github.com/chytilp/dbForSupTest/model"
+	"github.com/chytilp/supStats/model"
 )
 
 type LanguageTable struct {

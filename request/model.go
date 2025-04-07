@@ -1,6 +1,7 @@
 package request
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -68,4 +69,17 @@ func (o *OutputData) findInBranch(name string, branch *Item) *Item {
 
 func (o *OutputData) NamesAreSame(name string, itemName string) bool {
 	return strings.EqualFold(name, itemName)
+}
+
+func ReadData(dataFilePath string) (*OutputData, error) {
+	modelPtr, err := UnmarshalFromFile[OutputData](dataFilePath)
+	if err != nil {
+		return nil, err
+	}
+	return modelPtr, nil
+}
+
+func (o *OutputData) DateInString() string {
+	date := o.DownloadedAt
+	return fmt.Sprintf("%04d-%02d-%02d", date.Year(), date.Month(), date.Day())
 }

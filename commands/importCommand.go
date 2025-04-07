@@ -4,8 +4,9 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/chytilp/dbForSupTest/model"
-	"github.com/chytilp/dbForSupTest/persistence"
+	"github.com/chytilp/supStats/model"
+	"github.com/chytilp/supStats/persistence"
+	"github.com/chytilp/supStats/request"
 )
 
 type ImportCommand struct {
@@ -44,7 +45,7 @@ func (i *ImportCommand) setDataTable(dataTable persistence.DataTable) {
 	i.dataTable = dataTable
 }
 
-func (i *ImportCommand) insertLanguage(item model.Item, parentId *int) (int, error) {
+func (i *ImportCommand) insertLanguage(item request.Item, parentId *int) (int, error) {
 	idPtr, err := i.languageTable.GetLanguageId(item.Identifier)
 	if err != nil {
 		return 0, err
@@ -60,7 +61,7 @@ func (i *ImportCommand) insertLanguage(item model.Item, parentId *int) (int, err
 	return newId, err
 }
 
-func (i *ImportCommand) insertDataItem(item model.Item, languageId int, date string) error {
+func (i *ImportCommand) insertDataItem(item request.Item, languageId int, date string) error {
 	row := model.NewDataRow(item, languageId, date)
 	err := i.dataTable.InsertDataItem(row)
 	if err != nil {
@@ -69,7 +70,7 @@ func (i *ImportCommand) insertDataItem(item model.Item, languageId int, date str
 	return nil
 }
 
-func (i *ImportCommand) insertItem(item model.Item, parentId *int, date string) (int, error) {
+func (i *ImportCommand) insertItem(item request.Item, parentId *int, date string) (int, error) {
 	languageId, err := i.insertLanguage(item, parentId)
 	if err != nil {
 		return 0, err
@@ -81,7 +82,7 @@ func (i *ImportCommand) insertItem(item model.Item, parentId *int, date string) 
 	return languageId, nil
 }
 
-func (i *ImportCommand) insertItemAndChildren(item model.Item, parentId *int, date string) error {
+func (i *ImportCommand) insertItemAndChildren(item request.Item, parentId *int, date string) error {
 	id, err := i.insertItem(item, parentId, date)
 	if err != nil {
 		return err
@@ -119,7 +120,7 @@ func (i *ImportCommand) setResult(result FileImportResult, err error) FileImport
 func (i *ImportCommand) RunFile(filename string, folder string) FileImportResult {
 	result := NewFileImportResult(filename, folder)
 	inputFilePath := folder + "/" + filename
-	data, err := model.ReadData(inputFilePath)
+	data, err := request.ReadData(inputFilePath)
 	if err != nil {
 		return i.setResult(result, err)
 	}
