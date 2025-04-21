@@ -13,8 +13,8 @@ import (
 	"github.com/chytilp/supStats/stats"
 )
 
-func getDb() (*sql.DB, error) {
-	dbFile := "/home/pchytil/data/supStats/supStats.db"
+func getDb(config *common.Config) (*sql.DB, error) {
+	dbFile := config.DbPath
 	err := persistence.CreateSupDatabase(dbFile)
 	if err != nil {
 		fmt.Printf("CreateDatabase err: %v\n", err)
@@ -111,7 +111,7 @@ func main() {
 		}
 	case "import":
 		importCmd.Parse(os.Args[2:])
-		db, err := getDb()
+		db, err := getDb(config)
 		if err != nil {
 			fmt.Println("err in create and get database")
 			log.Fatalln(err.Error())
