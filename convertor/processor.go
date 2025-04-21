@@ -10,11 +10,12 @@ import (
 )
 
 type Convertor struct {
-	config *common.Config
+	config   *common.Config
+	inputDir string
 }
 
-func NewConvertor(config *common.Config) Convertor {
-	return Convertor{config: config}
+func NewConvertor(config *common.Config, inputDir string) Convertor {
+	return Convertor{config: config, inputDir: inputDir}
 }
 
 type TransformationResult struct {
@@ -24,10 +25,13 @@ type TransformationResult struct {
 }
 
 func (c *Convertor) TransformFile(oldFilename string) (string, error) {
-	oldFilePath, err := c.config.GetFilePath(true, oldFilename)
-	if err != nil {
-		return "", err
+	var inputDir string
+	if strings.HasSuffix(c.inputDir, "/") {
+		inputDir = c.inputDir
+	} else {
+		inputDir = c.inputDir + "/"
 	}
+	oldFilePath := inputDir + oldFilename
 	oldFormatData, err := c.readDataFile(oldFilePath)
 	if err != nil {
 		return "", err
@@ -36,7 +40,7 @@ func (c *Convertor) TransformFile(oldFilename string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	newFilePath, err := request.MarshalToFile(*newFormatData, c.config)
+	newFilePath, err := request.MarshalToFile(*newFormatData, c.config, 24)
 	if err != nil {
 		return "", err
 	}

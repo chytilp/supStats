@@ -75,7 +75,7 @@ func (t *TableCreate[T]) folderFiles(absFolder string, firstDay int, lastDay int
 	}
 	absFiles := []string{}
 	for _, v := range files {
-		if !v.IsDir() && common.IsCorrectFileFormat(v.Name()) && t.includeFile(v.Name(), firstDay, lastDay) {
+		if !v.IsDir() && common.IsCorrectFileFormat(v.Name(), 24) && t.includeFile(v.Name(), firstDay, lastDay) {
 			absFiles = append(absFiles, v.Name())
 		}
 	}

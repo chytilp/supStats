@@ -225,7 +225,7 @@ func (d *DownloadV2Command) marshalToFile(items []OutputModel) (*string, error) 
 	if err != nil {
 		return nil, err
 	}
-	filePath := common.GetWholePath(fileData.DownloadedAt)
+	filePath := common.GetWholePath(fileData.DownloadedAt, 25)
 	absPath := path.Join(d.config.DataFolder, filePath)
 	err = os.WriteFile(absPath, content, 0644)
 	if err != nil {

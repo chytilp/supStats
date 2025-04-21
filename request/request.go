@@ -65,12 +65,12 @@ func UnmarshalFromFile[T any](filepath string) (*T, error) {
 	return &responseData, nil
 }
 
-func MarshalToFile(data OutputData, config *common.Config) (*string, error) {
+func MarshalToFile(data OutputData, config *common.Config, version int) (*string, error) {
 	content, err := json.MarshalIndent(data, "", " ")
 	if err != nil {
 		return nil, err
 	}
-	filePath := common.GetWholePath(data.DownloadedAt)
+	filePath := common.GetWholePath(data.DownloadedAt, version)
 	absPath := path.Join(config.DataFolder, filePath)
 	err = os.WriteFile(absPath, content, 0644)
 	if err != nil {

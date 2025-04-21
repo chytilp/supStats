@@ -3,6 +3,7 @@ package commands
 import (
 	"fmt"
 	"os"
+	"path"
 
 	"golang.org/x/exp/constraints"
 	"golang.org/x/exp/slices"
@@ -12,13 +13,17 @@ import (
 )
 
 type ConvertCommand struct {
-	config    *common.Config
-	inputDir  string
-	outputDir string
+	config   *common.Config
+	inputDir string
 }
 
-func NewConvertCommand(config *common.Config, inputDir string, outputDir string) ConvertCommand {
-	return ConvertCommand{config: config, inputDir: inputDir, outputDir: outputDir}
+func NewConvertCommand(config *common.Config, inputDir string) ConvertCommand {
+	return ConvertCommand{config: config, inputDir: inputDir}
+}
+
+func (c *ConvertCommand) getOutputDir() string {
+	monthDir := path.Base(c.inputDir)
+	return path.Join(c.config.DataFolder, monthDir)
 }
 
 func (c *ConvertCommand) Run() ([]string, error) {
@@ -26,12 +31,15 @@ func (c *ConvertCommand) Run() ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	outputFiles, err := c.getDataFilesOfDir(c.outputDir)
+	fmt.Printf("Found %d input files\n", len(*inputFiles))
+	outputDir := c.getOutputDir()
+	outputFiles, err := c.getDataFilesOfDir(outputDir)
 	if err != nil {
 		return nil, err
 	}
-	filesToConvert := c.removeAlreadyExisting(*inputFiles, *outputFiles)
-	conv := convertor.NewConvertor(c.config)
+	fmt.Printf("Found %d output files\n", len(*outputFiles))
+	filesToConvert := c.removeFromInputAlreadyExisting(*inputFiles, *outputFiles)
+	conv := convertor.NewConvertor(c.config, c.inputDir)
 	result := conv.TransformFiles(filesToConvert)
 	if len(result.Errors) > 0 {
 		for file, err := range result.Errors {
@@ -57,14 +65,14 @@ func (c *ConvertCommand) getDataFilesOfDir(dirPath string) (*[]string, error) {
 
 	fileNames := make([]string, 0, len(files))
 	for _, v := range files {
-		if !v.IsDir() && common.IsCorrectFileFormat(v.Name()) {
+		if !v.IsDir() && common.IsCorrectFileFormat(v.Name(), 24) {
 			fileNames = append(fileNames, v.Name())
 		}
 	}
 	return &fileNames, nil
 }
 
-func (c *ConvertCommand) removeAlreadyExisting(inpFiles []string, outFiles []string) []string {
+func (c *ConvertCommand) removeFromInputAlreadyExisting(inpFiles []string, outFiles []string) []string {
 	filtered := make([]string, 0, len(inpFiles))
 	existing := interSection(inpFiles, outFiles)
 	for _, f := range inpFiles {

@@ -1,6 +1,7 @@
 package request
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -34,7 +35,7 @@ type OutputData struct {
 }
 
 func (o *OutputData) Day() string {
-	filename := common.GetFileName(o.DownloadedAt) // data_2024_05_20.json
+	filename := common.GetFileName(o.DownloadedAt, 24) // data_2024_05_20.json
 	return filename[5:15]
 }
 
@@ -68,4 +69,17 @@ func (o *OutputData) findInBranch(name string, branch *Item) *Item {
 
 func (o *OutputData) NamesAreSame(name string, itemName string) bool {
 	return strings.EqualFold(name, itemName)
+}
+
+func ReadData(dataFilePath string) (*OutputData, error) {
+	modelPtr, err := UnmarshalFromFile[OutputData](dataFilePath)
+	if err != nil {
+		return nil, err
+	}
+	return modelPtr, nil
+}
+
+func (o *OutputData) DateInString() string {
+	date := o.DownloadedAt
+	return fmt.Sprintf("%04d-%02d-%02d", date.Year(), date.Month(), date.Day())
 }
