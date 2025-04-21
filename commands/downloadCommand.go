@@ -22,7 +22,7 @@ func (d *DownloadCommand) Run() (*string, error) {
 	if err != nil {
 		return nil, err
 	}
-	filePath, err := request.MarshalToFile(*outputData, d.config)
+	filePath, err := request.MarshalToFile(*outputData, d.config, 24)
 	if err != nil {
 		fmt.Println("err in MarshalToFile")
 		return nil, err

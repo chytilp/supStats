@@ -3,27 +3,27 @@ package commands
 import (
 	"database/sql"
 	"fmt"
+	"os"
 
+	"github.com/chytilp/supStats/common"
 	"github.com/chytilp/supStats/model"
 	"github.com/chytilp/supStats/persistence"
 	"github.com/chytilp/supStats/request"
 )
 
 type ImportCommand struct {
-	DB            *sql.DB
-	InputfilePath string
-	InputFolder   string
-	languageTable persistence.LanguageTable
-	dataTable     persistence.DataTable
+	DB          *sql.DB
+	InputFolder string
+	Version     int
+	dataTable   persistence.SupDataTable
 }
 
 type FileImportResult struct {
-	Folder       string
-	Filename     string
-	Imported     bool
-	Error        *error
-	LanguageRows int
-	DataRows     int
+	Folder   string
+	Filename string
+	Imported bool
+	Error    *error
+	DataRows int
 }
 
 func NewFileImportResult(filename string, folder string) FileImportResult {
@@ -33,62 +33,38 @@ func NewFileImportResult(filename string, folder string) FileImportResult {
 	}
 }
 
-func NewImportCommand(db *sql.DB, inputfilePath string) ImportCommand {
-	return ImportCommand{DB: db, InputfilePath: inputfilePath}
+func NewImportCommand(db *sql.DB, inputFolder string, version int) ImportCommand {
+	return ImportCommand{DB: db, InputFolder: inputFolder, Version: version}
 }
 
-func (i *ImportCommand) setLanguageTable(languageTable persistence.LanguageTable) {
-	i.languageTable = languageTable
-}
-
-func (i *ImportCommand) setDataTable(dataTable persistence.DataTable) {
+func (i *ImportCommand) setDataTable(dataTable persistence.SupDataTable) {
 	i.dataTable = dataTable
 }
 
-func (i *ImportCommand) insertLanguage(item request.Item, parentId *int) (int, error) {
-	idPtr, err := i.languageTable.GetLanguageId(item.Identifier)
-	if err != nil {
-		return 0, err
-	}
-	if *idPtr > 0 {
-		return *idPtr, nil
-	}
-	row := model.NewLanguageRow(item, parentId)
-	newId, err := i.languageTable.InsertLanguage(row)
-	if err != nil {
-		return 0, err
-	}
-	return newId, err
-}
-
-func (i *ImportCommand) insertDataItem(item request.Item, languageId int, date string) error {
-	row := model.NewDataRow(item, languageId, date)
-	err := i.dataTable.InsertDataItem(row)
+func (i *ImportCommand) insertDataItem(item request.Item, filename string) error {
+	row := model.NewSupdataRow(item, i.Version, filename)
+	err := i.dataTable.InsertRow(row)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (i *ImportCommand) insertItem(item request.Item, parentId *int, date string) (int, error) {
-	languageId, err := i.insertLanguage(item, parentId)
+func (i *ImportCommand) insertItem(item request.Item, filename string) error {
+	err := i.insertDataItem(item, filename)
 	if err != nil {
-		return 0, err
+		return err
 	}
-	err = i.insertDataItem(item, languageId, date)
-	if err != nil {
-		return 0, err
-	}
-	return languageId, nil
+	return nil
 }
 
-func (i *ImportCommand) insertItemAndChildren(item request.Item, parentId *int, date string) error {
-	id, err := i.insertItem(item, parentId, date)
+func (i *ImportCommand) insertItemAndChildren(item request.Item, filename string) error {
+	err := i.insertItem(item, filename)
 	if err != nil {
 		return err
 	}
 	for _, child := range item.Children {
-		_, err = i.insertItem(child, &id, date)
+		err = i.insertItem(child, filename)
 		if err != nil {
 			return err
 		}
@@ -97,9 +73,24 @@ func (i *ImportCommand) insertItemAndChildren(item request.Item, parentId *int, 
 }
 
 func (i *ImportCommand) getFolderFiles() []string {
-	// TODO:
-	files := make([]string, 0)
-	return files
+	resultFiles := []string{}
+	folder, err := os.Open(i.InputFolder)
+	if err != nil {
+		fmt.Println(err)
+		return resultFiles
+	}
+	files, err := folder.Readdir(0)
+	if err != nil {
+		fmt.Println(err)
+		return resultFiles
+	}
+
+	for _, v := range files {
+		if !v.IsDir() && common.IsCorrectFileFormat(v.Name(), i.Version) {
+			resultFiles = append(resultFiles, v.Name())
+		}
+	}
+	return resultFiles
 }
 
 func (i *ImportCommand) Run() []FileImportResult {
@@ -125,10 +116,7 @@ func (i *ImportCommand) RunFile(filename string, folder string) FileImportResult
 		return i.setResult(result, err)
 	}
 	date := data.DateInString()
-	i.setLanguageTable(persistence.LanguageTable{
-		DB: i.DB,
-	})
-	i.setDataTable(persistence.DataTable{
+	i.setDataTable(persistence.SupDataTable{
 		DB: i.DB,
 	})
 	existsPtr, err := i.dataTable.ExistsDate(date)
@@ -140,27 +128,19 @@ func (i *ImportCommand) RunFile(filename string, folder string) FileImportResult
 		return i.setResult(result, err)
 	}
 	//---------------------- inserts ------------------
-	err = i.insertItemAndChildren(*data.Backend, nil, date)
+	err = i.insertItemAndChildren(*data.Backend, filename)
 	if err != nil {
 		return i.setResult(result, err)
 	}
-	err = i.insertItemAndChildren(*data.Frontend, nil, date)
+	err = i.insertItemAndChildren(*data.Frontend, filename)
 	if err != nil {
 		return i.setResult(result, err)
 	}
-	err = i.insertItemAndChildren(*data.Mobile, nil, date)
+	err = i.insertItemAndChildren(*data.Mobile, filename)
 	if err != nil {
 		return i.setResult(result, err)
 	}
 	//------------------ stats --------------------
-	lRows, err := i.languageTable.GetRows()
-	if err != nil {
-		fmt.Printf("Language table rows error: %v\n", err)
-		result.LanguageRows = -1
-	} else {
-		result.LanguageRows = lRows
-	}
-	fmt.Printf("Language table rows: %d\n", lRows)
 	dRows, err := i.dataTable.GetRows()
 	if err != nil {
 		fmt.Printf("Data table rows error: %v\n", err)

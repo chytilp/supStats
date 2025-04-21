@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"flag"
 	"fmt"
 	"log"
@@ -8,8 +9,24 @@ import (
 
 	"github.com/chytilp/supStats/commands"
 	"github.com/chytilp/supStats/common"
+	"github.com/chytilp/supStats/persistence"
 	"github.com/chytilp/supStats/stats"
 )
+
+func getDb() (*sql.DB, error) {
+	dbFile := "/home/pchytil/data/supStats/supStats.db"
+	err := persistence.CreateSupDatabase(dbFile)
+	if err != nil {
+		fmt.Printf("CreateDatabase err: %v\n", err)
+		return nil, err
+	}
+	db, err := persistence.GetDatabase(dbFile)
+	if err != nil {
+		fmt.Printf("GetDatabase err: %v\n", err)
+		return nil, err
+	}
+	return db, nil
+}
 
 func main() {
 	fmt.Println("Start app")
@@ -44,9 +61,12 @@ func main() {
 	var inputDir string
 	convertCmd.StringVar(&inputDir, "inputDir", "", "inputDir")
 	convertCmd.StringVar(&inputDir, "i", "", "inputDir")
-	var outputDir string
-	convertCmd.StringVar(&outputDir, "outputDir", "", "outputDir")
-	convertCmd.StringVar(&outputDir, "o", "", "outputDir")
+
+	importCmd := flag.NewFlagSet("import", flag.ExitOnError)
+	var importInputDir string
+	importCmd.StringVar(&importInputDir, "inputDir", "", "inputDir")
+	var version int
+	importCmd.IntVar(&version, "version", 0, "version")
 
 	if len(os.Args) < 2 {
 		fmt.Println("expected 'download', 'table', 'relTable' or 'convert' subcommands")
@@ -80,7 +100,7 @@ func main() {
 
 	case "convert":
 		convertCmd.Parse(os.Args[2:])
-		convertCommand := commands.NewConvertCommand(config, inputDir, outputDir)
+		convertCommand := commands.NewConvertCommand(config, inputDir)
 		converted, err := convertCommand.Run()
 		if err != nil {
 			fmt.Println("err in ConvertCommand")
@@ -89,37 +109,19 @@ func main() {
 		for _, convertedFile := range converted {
 			fmt.Printf("file: %s was successfully converted.\n", convertedFile)
 		}
+	case "import":
+		importCmd.Parse(os.Args[2:])
+		db, err := getDb()
+		if err != nil {
+			fmt.Println("err in create and get database")
+			log.Fatalln(err.Error())
+		}
+		importCommand := commands.NewImportCommand(db, importInputDir, version)
+		results := importCommand.Run()
+		fmt.Printf("result: %v\n", results)
 
 	default:
-		fmt.Println("expected 'download', 'table', 'relTable' or 'convert' subcommands")
+		fmt.Println("expected 'download', 'table', 'relTable', 'import' or 'convert' subcommands")
 		os.Exit(1)
 	}
-
-	/*outputData, err := commands.CreateDailyData(config)
-	if err != nil {
-		fmt.Println("err in CreateDailyData")
-		log.Fatalln(err.Error())
-	}
-	err = request.MarshalToFile(*outputData, config)
-	if err != nil {
-		fmt.Println("err in MarshalToFile")
-		log.Fatalln(err.Error())
-	}
-	fmt.Println("Saved")
-	tableCreate := stats.TableCreate[int]{
-		DateFrom: time.Date(2024, time.May, 1, 0, 0, 0, 0, time.Local),
-		DateTo:   time.Date(2024, time.May, 31, 0, 0, 0, 0, time.Local),
-		Tech:     stats.Frontend,
-		Config:   config,
-	}
-	err := tableCreate.ReadData(true)
-	if err != nil {
-		fmt.Println("err in ReadData")
-		log.Fatalln(err.Error())
-	}
-	display := stats.NewDisplay(tableCreate.Table())
-	lines := display.Lines4Print()
-	for _, line := range lines {
-		fmt.Println(line)
-	}*/
 }

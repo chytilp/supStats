@@ -61,3 +61,10 @@ func CreateDatabaseFileIfNotExists(databaseFilePath string) error {
 	defer file.Close()
 	return nil
 }
+
+func createTable(db *sql.DB, query string) error {
+	if _, err := db.Exec(query); err != nil {
+		return err
+	}
+	return nil
+}

@@ -35,7 +35,7 @@ type OutputData struct {
 }
 
 func (o *OutputData) Day() string {
-	filename := common.GetFileName(o.DownloadedAt) // data_2024_05_20.json
+	filename := common.GetFileName(o.DownloadedAt, 24) // data_2024_05_20.json
 	return filename[5:15]
 }
 

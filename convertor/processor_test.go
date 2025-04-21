@@ -16,11 +16,10 @@ import (
 func createConfig() *common.Config {
 	cwd, _ := filepath.Abs(".")
 	config := common.Config{
-		BackendUrl:    "",
-		FrontendUrl:   "",
-		MobileUrl:     "",
-		DataFolder:    path.Join(cwd, "data", "new"),
-		OldDataFolder: path.Join(cwd, "data", "old"),
+		BackendUrl:  "",
+		FrontendUrl: "",
+		MobileUrl:   "",
+		DataFolder:  path.Join(cwd, "data", "new"),
 	}
 	return &config
 }

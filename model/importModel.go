@@ -1,33 +1,67 @@
 package model
 
 import (
+	"fmt"
+	"time"
+
+	"github.com/chytilp/supStats/common"
 	"github.com/chytilp/supStats/request"
 )
 
-type LanguageRow struct {
-	Name     string
-	Path     string
-	ParentId *int
+type SupdataRow struct {
+	Language string
+	Type     int
+	Count    int
+	Version  int
+	Date     string
 }
 
-func NewLanguageRow(item request.Item, parentId *int) LanguageRow {
-	return LanguageRow{
-		Name:     item.Name,
-		Path:     item.Identifier,
-		ParentId: parentId,
+func getType(isTechnology bool) int {
+	if isTechnology {
+		return 2
+	} else {
+		return 1
 	}
 }
 
-type DataRow struct {
-	LanguageId int
-	Count      int
-	Date       string
+func NewSupdataRow(item request.Item, version int, filename string) SupdataRow {
+	var dayPtr *time.Time
+	dayPtr, _ = common.GetFileDate(filename)
+	var date time.Time = *dayPtr
+	day := fmt.Sprintf("%04d_%02d_%02d", date.Year(), date.Month(), date.Day())
+	var isTechnology bool = len(item.Children) == 0
+	return SupdataRow{
+		Language: item.Name,
+		Count:    item.OfferCount,
+		Type:     getType(isTechnology),
+		Version:  version,
+		Date:     day,
+	}
 }
 
-func NewDataRow(item request.Item, languageId int, date string) DataRow {
-	return DataRow{
-		LanguageId: languageId,
-		Count:      item.OfferCount,
-		Date:       date,
+type IndexdataRow struct {
+	Language  string
+	IndexType int
+	Rating    float32
+	Order     int
+	Date      string
+}
+
+func getIndexType(name string) int {
+	if name == "tiobe" {
+		return 1
+	} else if name == "pypl" {
+		return 2
+	}
+	return 0
+}
+
+func NewIndexdataRow(indexName string, lang string, rating float32, order int, month string) IndexdataRow {
+	return IndexdataRow{
+		Language:  lang,
+		IndexType: getIndexType(indexName),
+		Rating:    rating,
+		Order:     order,
+		Date:      month,
 	}
 }
