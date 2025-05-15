@@ -28,7 +28,7 @@ func NewSupdataRow(item request.Item, version int, filename string) SupdataRow {
 	var dayPtr *time.Time
 	dayPtr, _ = common.GetFileDate(filename)
 	var date time.Time = *dayPtr
-	day := fmt.Sprintf("%04d_%02d_%02d", date.Year(), date.Month(), date.Day())
+	day := fmt.Sprintf("%04d-%02d-%02d 00:00:00", date.Year(), date.Month(), date.Day())
 	var isTechnology bool = len(item.Children) == 0
 	return SupdataRow{
 		Language: item.Name,

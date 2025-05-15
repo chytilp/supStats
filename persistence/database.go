@@ -49,7 +49,7 @@ func createSupDataTable(db *sql.DB) error {
 		type INTEGER NOT NULL, 
 		count INTEGER NOT NULL,
 		version INTEGER NOT NULL,
-		date TEXT NOT NULL);`
+		date DATETIME NOT NULL);`
 	return createTable(db, createDataQuery)
 }
 
@@ -61,6 +61,6 @@ func createIndexDataTable(db *sql.DB) error {
 		indexType INTEGER NOT NULL,
 		rating REAL NOT NULL,
 		order INTEGER NOT NULL,
-		date TEXT NOT NULL);`
+		date DATETIME NOT NULL);`
 	return createTable(db, createDataQuery)
 }
