@@ -8,6 +8,13 @@ import (
 	"github.com/chytilp/supStats/request"
 )
 
+type RecordType int
+
+const (
+	Category   RecordType = 1
+	Technology RecordType = 2
+)
+
 type SupdataRow struct {
 	Language string
 	Type     int
