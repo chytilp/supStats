@@ -21,6 +21,7 @@ type DownloadV2Command struct {
 	config          *common.Config
 	categorySlugs   []string
 	technologySlugs []string
+	fulltextSlugs   []string
 }
 
 type OutputModel struct {
@@ -65,17 +66,21 @@ func NewDownloadV2Command(config *common.Config) DownloadV2Command {
 	}
 	technology := []string{
 		"javascript", "html", "css-3", "typescript", "java", "php", "net",
-		"python", "c-sharp", "c%2B%2B", "c", "ruby", "go", "scala", "r", "nodejs",
+		"python", "c-sharp", "c%2B%2B", "c", "ruby", "scala", "nodejs",
 		"rust", "kotlin", "flutter", "react-native", "dart", "react-js",
 		"angular", "vue-js", "docker", "kubernetes", "ansible", "terraform",
 		"django", "flask",
 	}
+	fulltext := []string{
+		"golang",
+	}
 
-	return DownloadV2Command{config: config, categorySlugs: category, technologySlugs: technology}
+	return DownloadV2Command{config: config, categorySlugs: category, technologySlugs: technology,
+		fulltextSlugs: fulltext}
 }
 
 func (d *DownloadV2Command) createInputs() []InputModel {
-	inputs := make([]InputModel, len(d.categorySlugs)+len(d.technologySlugs))
+	inputs := make([]InputModel, d.slugsCount())
 	var index int = 0
 	for _, categorySlug := range d.categorySlugs {
 		inputs[index] = InputModel{Slug: categorySlug, IsCategory: true, BaseUrl: d.config.CategoryBaseUrl}
@@ -85,7 +90,15 @@ func (d *DownloadV2Command) createInputs() []InputModel {
 		inputs[index] = InputModel{Slug: technologySlug, IsCategory: false, BaseUrl: d.config.TechnologyBaseUrl}
 		index += 1
 	}
+	for _, fulltextSlug := range d.fulltextSlugs {
+		inputs[index] = InputModel{Slug: fulltextSlug, IsCategory: false, BaseUrl: d.config.FulltextBaseUrl}
+		index += 1
+	}
 	return inputs
+}
+
+func (d *DownloadV2Command) slugsCount() int {
+	return len(d.categorySlugs) + len(d.technologySlugs) + len(d.fulltextSlugs)
 }
 
 func (d *DownloadV2Command) Run() (*string, error) {
@@ -94,7 +107,7 @@ func (d *DownloadV2Command) Run() (*string, error) {
 	inputChan := make(chan InputModel, 4)
 	outputChan := make(chan OutputModel)
 
-	results := make([]OutputModel, len(d.categorySlugs)+len(d.technologySlugs))
+	results := make([]OutputModel, d.slugsCount())
 	var wg sync.WaitGroup
 	wg.Add(4)
 

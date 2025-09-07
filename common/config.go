@@ -16,6 +16,7 @@ type Config struct {
 	DataFolder        string
 	CategoryBaseUrl   string
 	TechnologyBaseUrl string
+	FulltextBaseUrl   string
 	HeaderHost        string
 	HeaderReferer     string
 	HeaderOrigin      string
