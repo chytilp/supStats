@@ -25,6 +25,7 @@ func getDb(config *common.Config) (*sql.DB, error) {
 		fmt.Printf("GetDatabase err: %v\n", err)
 		return nil, err
 	}
+	fmt.Printf("We have db: %v\n", db)
 	return db, nil
 }
 
@@ -67,6 +68,11 @@ func main() {
 	importCmd.StringVar(&importInputDir, "inputDir", "", "inputDir")
 	var version int
 	importCmd.IntVar(&version, "version", 0, "version")
+
+	import25Cmd := flag.NewFlagSet("import25", flag.ExitOnError)
+	var import25InputDir string
+	import25Cmd.StringVar(&import25InputDir, "inputDir", "", "inputDir")
+	import25Cmd.StringVar(&import25InputDir, "i", "", "inputDir")
 
 	if len(os.Args) < 2 {
 		fmt.Println("expected 'download', 'table', 'relTable' or 'convert' subcommands")
@@ -119,6 +125,16 @@ func main() {
 		importCommand := commands.NewImportCommand(db, importInputDir, version)
 		results := importCommand.Run()
 		fmt.Printf("result: %v\n", results)
+	case "import25":
+		import25Cmd.Parse(os.Args[2:])
+		db25, err := getDb(config)
+		if err != nil {
+			fmt.Println("err in create and get database")
+			log.Fatalln(err.Error())
+		}
+		import25Command := commands.NewImport25Command(db25, import25InputDir)
+		results25 := import25Command.Run()
+		fmt.Printf("result: %v\n", results25)
 
 	default:
 		fmt.Println("expected 'download', 'table', 'relTable', 'import' or 'convert' subcommands")
