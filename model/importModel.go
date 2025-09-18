@@ -46,6 +46,18 @@ func NewSupdataRow(item request.Item, version int, filename string) SupdataRow {
 	}
 }
 
+func NewSupdata25Row(item FileContentItem, version int, itemType string, date time.Time) SupdataRow {
+	day := fmt.Sprintf("%04d-%02d-%02d 00:00:00", date.Year(), date.Month(), date.Day())
+	var isTechnology bool = (itemType == "technology")
+	return SupdataRow{
+		Language: item.Name,
+		Count:    item.Count,
+		Type:     getType(isTechnology),
+		Version:  version,
+		Date:     day,
+	}
+}
+
 type IndexdataRow struct {
 	Language  string
 	IndexType int

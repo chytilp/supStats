@@ -26,6 +26,33 @@ type FileImportResult struct {
 	DataRows int
 }
 
+func (f *FileImportResult) SetErrorResult(err error) FileImportResult {
+	f.Error = &err
+	f.Imported = false
+	return *f
+}
+
+func getFolderFiles(inputFolder string, version int) []string {
+	resultFiles := []string{}
+	folder, err := os.Open(inputFolder)
+	if err != nil {
+		fmt.Println(err)
+		return resultFiles
+	}
+	files, err := folder.Readdir(0)
+	if err != nil {
+		fmt.Println(err)
+		return resultFiles
+	}
+
+	for _, v := range files {
+		if !v.IsDir() && common.IsCorrectFileFormat(v.Name(), version) {
+			resultFiles = append(resultFiles, v.Name())
+		}
+	}
+	return resultFiles
+}
+
 func NewFileImportResult(filename string, folder string) FileImportResult {
 	return FileImportResult{
 		Folder:   folder,
@@ -72,29 +99,8 @@ func (i *ImportCommand) insertItemAndChildren(item request.Item, filename string
 	return nil
 }
 
-func (i *ImportCommand) getFolderFiles() []string {
-	resultFiles := []string{}
-	folder, err := os.Open(i.InputFolder)
-	if err != nil {
-		fmt.Println(err)
-		return resultFiles
-	}
-	files, err := folder.Readdir(0)
-	if err != nil {
-		fmt.Println(err)
-		return resultFiles
-	}
-
-	for _, v := range files {
-		if !v.IsDir() && common.IsCorrectFileFormat(v.Name(), i.Version) {
-			resultFiles = append(resultFiles, v.Name())
-		}
-	}
-	return resultFiles
-}
-
 func (i *ImportCommand) Run() []FileImportResult {
-	files := i.getFolderFiles()
+	files := getFolderFiles(i.InputFolder, i.Version)
 	results := make([]FileImportResult, len(files))
 	for index, file := range files {
 		results[index] = i.RunFile(file, i.InputFolder)
@@ -110,21 +116,23 @@ func (i *ImportCommand) setResult(result FileImportResult, err error) FileImport
 
 func (i *ImportCommand) RunFile(filename string, folder string) FileImportResult {
 	result := NewFileImportResult(filename, folder)
+	i.setDataTable(persistence.SupDataTable{
+		DB: i.DB,
+	})
+	originalRows, _ := i.dataTable.GetRows(i.Version)
 	inputFilePath := folder + "/" + filename
 	data, err := request.ReadData(inputFilePath)
 	if err != nil {
 		return i.setResult(result, err)
 	}
 	date := data.DateInString()
-	i.setDataTable(persistence.SupDataTable{
-		DB: i.DB,
-	})
-	existsPtr, err := i.dataTable.ExistsDate(date)
+
+	existsPtr, err := i.dataTable.ExistsDate(date, i.Version)
 	if err != nil {
 		return i.setResult(result, err)
 	}
 	if *existsPtr {
-		err = fmt.Errorf("date %s already exists in database", date)
+		err = fmt.Errorf("date %s already exists in database table supdata (version: %d)", date, i.Version)
 		return i.setResult(result, err)
 	}
 	//---------------------- inserts ------------------
@@ -141,14 +149,14 @@ func (i *ImportCommand) RunFile(filename string, folder string) FileImportResult
 		return i.setResult(result, err)
 	}
 	//------------------ stats --------------------
-	dRows, err := i.dataTable.GetRows()
+	dRows, err := i.dataTable.GetRows(i.Version)
 	if err != nil {
 		fmt.Printf("Data table rows error: %v\n", err)
 		result.DataRows = -1
 	} else {
-		result.DataRows = dRows
+		result.DataRows = dRows - originalRows
 	}
-	fmt.Printf("data table rows: %d\n", dRows)
+	fmt.Printf("data new table rows: %d\n", dRows-originalRows)
 	result.Imported = true
 	return result
 }

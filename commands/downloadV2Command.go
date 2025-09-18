@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/chytilp/supStats/common"
+	"github.com/chytilp/supStats/model"
 )
 
 type ResponseModel struct {
@@ -29,17 +30,6 @@ type OutputModel struct {
 	Slug       string
 	Count      int
 	Error      *error
-}
-
-type FileContentItem struct {
-	Name  string `json:"name"`
-	Count int    `json:"count"`
-}
-
-type FileContent struct {
-	Categories   []FileContentItem `json:"categories"`
-	Technologies []FileContentItem `json:"technologies"`
-	DownloadedAt time.Time         `json:"downloaded"`
 }
 
 func (o *OutputModel) IsValid() bool {
@@ -216,20 +206,20 @@ func feed(inputChan chan<- InputModel, inputs []InputModel) {
 }
 
 func (d *DownloadV2Command) marshalToFile(items []OutputModel) (*string, error) {
-	categoryItems := []FileContentItem{}
-	technologyItems := []FileContentItem{}
+	categoryItems := []model.FileContentItem{}
+	technologyItems := []model.FileContentItem{}
 	for _, item := range items {
 		if item.IsCategory {
-			categoryItems = append(categoryItems, FileContentItem{Name: item.Slug, Count: item.Count})
+			categoryItems = append(categoryItems, model.FileContentItem{Name: item.Slug, Count: item.Count})
 		} else {
 			if item.Slug == "c%2B%2B" {
 				item.Slug = "c++"
 			}
-			technologyItems = append(technologyItems, FileContentItem{Name: item.Slug, Count: item.Count})
+			technologyItems = append(technologyItems, model.FileContentItem{Name: item.Slug, Count: item.Count})
 		}
 	}
 
-	fileData := FileContent{
+	fileData := model.FileContent{
 		Categories:   categoryItems,
 		Technologies: technologyItems,
 		DownloadedAt: time.Now(),

@@ -29,18 +29,18 @@ func (d *SupDataTable) InsertRow(newRow model.SupdataRow) error {
 	return nil
 }
 
-func (d *SupDataTable) ExistsDate(date string) (*bool, error) {
+func (d *SupDataTable) ExistsDate(date string, version int) (*bool, error) {
 	var count int
-	if err := d.DB.QueryRow(`SELECT COUNT(id) FROM supdata WHERE date = ?`, date).Scan(&count); err != nil {
+	if err := d.DB.QueryRow(`SELECT COUNT(id) FROM supdata WHERE date = ? AND version = ?`, date, version).Scan(&count); err != nil {
 		return nil, err
 	}
 	exists := count > 0
 	return &exists, nil
 }
 
-func (d *SupDataTable) GetRows() (int, error) {
+func (d *SupDataTable) GetRows(version int) (int, error) {
 	var count int
-	if err := d.DB.QueryRow(`SELECT COUNT(id) FROM supdata`).Scan(&count); err != nil {
+	if err := d.DB.QueryRow(`SELECT COUNT(id) FROM supdata WHERE version = ?`, version).Scan(&count); err != nil {
 		return -1, err
 	}
 	return count, nil
