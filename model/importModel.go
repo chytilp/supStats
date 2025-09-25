@@ -58,29 +58,73 @@ func NewSupdata25Row(item FileContentItem, version int, itemType string, date ti
 	}
 }
 
-type IndexdataRow struct {
-	Language  string
-	IndexType int
-	Rating    float32
-	Order     int
-	Date      string
+type IndexRecord struct {
+	Language      string   `json:"lang"`
+	Month         string   `json:"-"`
+	Order         int      `json:"order"`
+	OrderChange   *string  `json:"change"`
+	OrderPrevYear *int     `json:"orderPreviousYear,omitempty"`
+	Rating        float32  `json:"ratingPercent"`
+	RatingChange  *float32 `json:"ratingChangePercent"`
+	Type          string   `json:"-"`
 }
 
-func getIndexType(name string) int {
-	if name == "tiobe" {
-		return 1
-	} else if name == "pypl" {
-		return 2
+func (ir *IndexRecord) GetOrderChange() string {
+	if ir.IsOrderChangeNil() {
+		return "nil"
+	} else {
+		return *ir.OrderChange
 	}
-	return 0
 }
 
-func NewIndexdataRow(indexName string, lang string, rating float32, order int, month string) IndexdataRow {
-	return IndexdataRow{
-		Language:  lang,
-		IndexType: getIndexType(indexName),
-		Rating:    rating,
-		Order:     order,
-		Date:      month,
+func (ir *IndexRecord) IsOrderChangeNil() bool {
+	return ir.OrderChange == nil
+}
+
+func (ir *IndexRecord) IsOrderPrevYearNil() bool {
+	return ir.OrderPrevYear == nil
+}
+
+func (ir *IndexRecord) GetOrderPrevYear() string {
+	if ir.IsOrderPrevYearNil() {
+		return "nil"
+	} else {
+		return fmt.Sprintf("%d", *ir.OrderPrevYear)
+	}
+}
+
+func (ir *IndexRecord) IsRatingChangeNil() bool {
+	return ir.RatingChange == nil
+}
+
+func (ir *IndexRecord) GetRatingChange() string {
+	if ir.IsRatingChangeNil() {
+		return "nil"
+	} else {
+		return fmt.Sprintf("%.2f", *ir.RatingChange)
+	}
+}
+
+func (ir *IndexRecord) String() string {
+
+	return fmt.Sprintf("lang: %s, order: %d, month: %s, type: %s, orderChange: %s, rating: %f, ratingChange: %s, orderPrevYear: %s",
+		ir.Language, ir.Order, ir.Month, ir.Type, ir.GetOrderChange(), ir.Rating, ir.GetRatingChange(), ir.GetOrderPrevYear())
+}
+
+type MonthIndex []*IndexRecord
+
+func (mi *MonthIndex) GetIndex(index int) *IndexRecord {
+	for idx, value := range *mi {
+		if idx == index {
+			return value
+		}
+	}
+	return nil
+}
+
+func (mi *MonthIndex) FillMonthAndType(month string, indexType string) {
+	for index := range *mi {
+		mi.GetIndex(index).Month = month
+		mi.GetIndex(index).Type = indexType
 	}
 }
