@@ -15,18 +15,18 @@ type IndexDataTable struct {
 	DB *sql.DB
 }
 
-func (d *IndexDataTable) InsertRow(newRow model.IndexdataRow) error {
+func (d *IndexDataTable) InsertRow(newRow model.IndexRecord) error {
 	insertSQL := `INSERT INTO indexdata(language, indexType, rating, order, date) VALUES (?, ?, ?, ?, ?)`
 	statement, err := d.DB.Prepare(insertSQL)
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
-	_, err = statement.Exec(newRow.Language, newRow.IndexType, newRow.Rating, newRow.Order, newRow.Date)
+	_, err = statement.Exec(newRow.Language, newRow.Type, newRow.Rating, newRow.Order, newRow.Month)
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
-	fmt.Printf("Inserted data item: language=%s, index=%d, rating=%f, order=%d, date=%s\n", newRow.Language, newRow.IndexType,
-		newRow.Rating, newRow.Order, newRow.Date)
+	fmt.Printf("Inserted data item: language=%s, index=%s, rating=%f, order=%d, date=%s\n", newRow.Language,
+		newRow.Type, newRow.Rating, newRow.Order, newRow.Month)
 	return nil
 }
 
@@ -39,9 +39,9 @@ func (d *IndexDataTable) ExistsDate(date string) (*bool, error) {
 	return &exists, nil
 }
 
-func (d *IndexDataTable) GetRows() (int, error) {
+func (d *IndexDataTable) GetRows(indexType string) (int, error) {
 	var count int
-	if err := d.DB.QueryRow(`SELECT COUNT(id) FROM indexdata`).Scan(&count); err != nil {
+	if err := d.DB.QueryRow(`SELECT COUNT(id) FROM indexdata where indexType = ?`, indexType).Scan(&count); err != nil {
 		return -1, err
 	}
 	return count, nil
