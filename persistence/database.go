@@ -3,7 +3,6 @@ package persistence
 import (
 	"database/sql"
 	"fmt"
-	"os"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -55,12 +54,12 @@ func createSupDataTable(db *sql.DB) error {
 }
 
 func createIndexDataTable(db *sql.DB) error {
-	dropTable := "DROP TABLE indexdata;"
+	/*dropTable := "DROP TABLE indexdata;"
 	err := createTable(db, dropTable)
 	if err != nil {
 		fmt.Printf("Drop table failed: %v\n", err)
 		os.Exit(1)
-	}
+	}*/
 	// indexType: [tiobe, pypl]
 	createDataQuery := `CREATE TABLE IF NOT EXISTS indexdata(
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
