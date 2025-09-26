@@ -78,7 +78,7 @@ func (i *ImportIndexCommand) RunFile(filename string, folder string) FileImportR
 	wholePath := folder + "/" + filename
 	result := NewFileImportResult(filename, folder)
 	i.dataTable = persistence.IndexDataTable{DB: i.DB}
-	month, indexType, err := i.getFileMonthAndType(wholePath)
+	month, indexType, err := i.getFileMonthAndType(filename)
 	if err != nil {
 		return result.SetErrorResult(err)
 	}

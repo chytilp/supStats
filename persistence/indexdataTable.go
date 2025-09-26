@@ -16,23 +16,22 @@ type IndexDataTable struct {
 }
 
 func (d *IndexDataTable) InsertRow(newRow model.IndexRecord) error {
-	insertSQL := `INSERT INTO indexdata(language, indexType, rating, order, date) VALUES (?, ?, ?, ?, ?)`
+	insertSQL := `INSERT INTO indexdata(lang, indexType, order1, orderChange, orderPrevYear, rating, ratingChange, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
 	statement, err := d.DB.Prepare(insertSQL)
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
-	_, err = statement.Exec(newRow.Language, newRow.Type, newRow.Rating, newRow.Order, newRow.Month)
+	_, err = statement.Exec(newRow.Language, newRow.Type, newRow.Order, newRow.OrderChange, newRow.OrderPrevYear, newRow.Rating, newRow.RatingChange, newRow.Month)
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
-	fmt.Printf("Inserted data item: language=%s, index=%s, rating=%f, order=%d, date=%s\n", newRow.Language,
-		newRow.Type, newRow.Rating, newRow.Order, newRow.Month)
+	fmt.Printf("Inserted data item: %s\n", newRow.String())
 	return nil
 }
 
-func (d *IndexDataTable) ExistsDate(date string) (*bool, error) {
+func (d *IndexDataTable) ExistsDate(date string, indexType string) (*bool, error) {
 	var count int
-	if err := d.DB.QueryRow(`SELECT COUNT(id) FROM indexdata WHERE date = ?`, date).Scan(&count); err != nil {
+	if err := d.DB.QueryRow(`SELECT COUNT(id) FROM indexdata WHERE date = ? and indexType = ?`, date, indexType).Scan(&count); err != nil {
 		return nil, err
 	}
 	exists := count > 0
