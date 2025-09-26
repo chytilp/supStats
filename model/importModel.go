@@ -64,8 +64,8 @@ type IndexRecord struct {
 	Order         int      `json:"order"`
 	OrderChange   *string  `json:"change"`
 	OrderPrevYear *int     `json:"orderPreviousYear,omitempty"`
-	Rating        float32  `json:"ratingPercent"`
-	RatingChange  *float32 `json:"ratingChangePercent"`
+	Rating        float64  `json:"ratingPercent"`
+	RatingChange  *float64 `json:"ratingChangePercent"`
 	Type          string   `json:"-"`
 }
 
