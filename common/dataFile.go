@@ -60,3 +60,12 @@ func IsCorrectFileFormat(fileName string, version int) bool {
 	}
 
 }
+
+func IsCorrectIndexFile(fileName string) bool {
+	tiobePattern, _ := regexp.Compile(`^tiobe_([0-9]{4})_([0-9]{2})\.json$`)
+	if tiobePattern.MatchString(fileName) {
+		return true
+	}
+	pyplPattern, _ := regexp.Compile(`^pypl_([0-9]{4})_([0-9]{2})\.json$`)
+	return pyplPattern.MatchString(fileName)
+}

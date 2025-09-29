@@ -54,13 +54,22 @@ func createSupDataTable(db *sql.DB) error {
 }
 
 func createIndexDataTable(db *sql.DB) error {
-	// indexType: 1 - tiobe, 2 - pypl
+	/*dropTable := "DROP TABLE indexdata;"
+	err := createTable(db, dropTable)
+	if err != nil {
+		fmt.Printf("Drop table failed: %v\n", err)
+		os.Exit(1)
+	}*/
+	// indexType: [tiobe, pypl]
 	createDataQuery := `CREATE TABLE IF NOT EXISTS indexdata(
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		language TEXT NOT NULL,
-		indexType INTEGER NOT NULL,
-		rating REAL NOT NULL,
-		order INTEGER NOT NULL,
+		lang TEXT NOT NULL,
+		indexType TEXT NOT NULL,
+		order1 INTEGER NOT NULL,
+		orderChange TEXT,
+		orderPrevYear INTEGER,
+		rating DECIMAL(5,2) NOT NULL,
+        ratingChange DECIMAL(5,2),
 		date DATETIME NOT NULL);`
 	return createTable(db, createDataQuery)
 }

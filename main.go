@@ -17,7 +17,12 @@ func getDb(config *common.Config) (*sql.DB, error) {
 	dbFile := config.DbPath
 	err := persistence.CreateSupDatabase(dbFile)
 	if err != nil {
-		fmt.Printf("CreateDatabase err: %v\n", err)
+		fmt.Printf("Create supdata table err: %v\n", err)
+		return nil, err
+	}
+	err = persistence.CreateIndexesDatabase(dbFile)
+	if err != nil {
+		fmt.Printf("Create indexdata table err: %v\n", err)
 		return nil, err
 	}
 	db, err := persistence.GetDatabase(dbFile)
@@ -74,8 +79,13 @@ func main() {
 	import25Cmd.StringVar(&import25InputDir, "inputDir", "", "inputDir")
 	import25Cmd.StringVar(&import25InputDir, "i", "", "inputDir")
 
+	importIndexCmd := flag.NewFlagSet("importIdx", flag.ExitOnError)
+	var importIdxInputDir string
+	importIndexCmd.StringVar(&importIdxInputDir, "inputDir", "", "inputDir")
+	importIndexCmd.StringVar(&importIdxInputDir, "i", "", "inputDir")
+
 	if len(os.Args) < 2 {
-		fmt.Println("expected 'download', 'table', 'relTable' or 'convert' subcommands")
+		fmt.Println("expected 'download', 'table', 'relTable', 'convert', 'import', 'import25', 'importIdx' subcommands")
 		os.Exit(1)
 	}
 
@@ -135,6 +145,21 @@ func main() {
 		import25Command := commands.NewImport25Command(db25, import25InputDir)
 		results25 := import25Command.Run()
 		fmt.Printf("result: %v\n", results25)
+	case "importIdx":
+		importIndexCmd.Parse(os.Args[2:])
+		dbIdx, err := getDb(config)
+		if err != nil {
+			fmt.Println("err in create and get database")
+			log.Fatalln(err.Error())
+		}
+		importIndexCommand := commands.NewImportIndexCommand(dbIdx, importIdxInputDir)
+		resultsIdx := importIndexCommand.Run()
+		for _, resultIdx := range resultsIdx {
+			if !resultIdx.Imported {
+				fmt.Printf("import err file: %s, err: %v\n", resultIdx.Filename, *resultIdx.Error)
+			}
+		}
+		fmt.Printf("result: %v\n", resultsIdx)
 
 	default:
 		fmt.Println("expected 'download', 'table', 'relTable', 'import' or 'convert' subcommands")
