@@ -45,3 +45,16 @@ func (d *SupDataTable) GetRows(version int) (int, error) {
 	}
 	return count, nil
 }
+
+func (d *SupDataTable) RemoveMonth(fromDate string, toDate string, version int) error {
+	removeSQL := `DELETE FROM supdata WHERE date >= ? AND date < ? AND version = ?`
+	statement, err := d.DB.Prepare(removeSQL)
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+	_, err = statement.Exec(fromDate, toDate, version)
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+	return nil
+}

@@ -1,3 +1,5 @@
+github.com/csotherden/strftime v1.0.0 h1:wF55J1T3CdRovvLsz57O/lj1JmBbCA9nAVRAmZ9IFrI=
+github.com/csotherden/strftime v1.0.0/go.mod h1:XcoVuNBsC8o3lrZ0whQqkUyjWQwCTS4X0lswTN4Y7vE=
 github.com/go-playground/assert/v2 v2.2.0 h1:JvknZsQTYeFEAhQwI4qEt9cyV5ONwRHC+lYKSsYSR8s=
 github.com/go-playground/assert/v2 v2.2.0/go.mod h1:VDjEfimB/XKnb+ZQfWdccd7VUvScMdVu0Titje2rxJ4=
 github.com/mattn/go-sqlite3 v1.14.27 h1:drZCnuvf37yPfs95E5jd9s3XhdVWLal+6BOK6qrv6IU=
