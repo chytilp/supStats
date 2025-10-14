@@ -47,6 +47,7 @@ func (d *IndexDataTable) GetRows(indexType string) (int, error) {
 }
 
 func (d *IndexDataTable) RemoveMonth(fromDate string, toDate string, indexType string) error {
+	fmt.Printf("Index table -> fromDt: %s, toDt: %s, indexType: %s\n", fromDate, toDate, indexType)
 	removeSQL := `DELETE FROM indexdata WHERE date >= ? AND date < ? AND indexType = ?`
 	statement, err := d.DB.Prepare(removeSQL)
 	if err != nil {

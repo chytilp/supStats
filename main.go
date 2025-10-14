@@ -37,6 +37,19 @@ func getDb(config *common.Config) (*sql.DB, error) {
 func main() {
 	fmt.Println("Start app")
 	config := common.GetConfig()
+	/*dbA, err := getDb(config)
+	if err != nil {
+		fmt.Printf("err in getDb: %v\n", err)
+		os.Exit(1)
+	}
+	month := time.Date(2025, time.September, 1, 0, 0, 0, 0, time.UTC)
+	removeCmd := commands.NewSupdataRemoveMonth(dbA, month, 25)
+	err = removeCmd.Run()
+	if err != nil {
+		fmt.Printf("err in removeMonth: %v\n", err)
+		os.Exit(1)
+	}
+	return*/
 
 	tableCmd := flag.NewFlagSet("table", flag.ExitOnError)
 	var tableType string

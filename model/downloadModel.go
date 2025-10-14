@@ -10,6 +10,13 @@ type FileContentItem struct {
 	Count int    `json:"count"`
 }
 
+func (f *FileContentItem) FixName(newName string) FileContentItem {
+	return FileContentItem{
+		Name:  newName,
+		Count: f.Count,
+	}
+}
+
 type FileContent struct {
 	Categories   []FileContentItem `json:"categories"`
 	Technologies []FileContentItem `json:"technologies"`

@@ -70,6 +70,9 @@ func (i *Import25Command) RunFile(filename string, folder string) FileImportResu
 	}
 	//-- technologies --
 	for _, technologyItem := range obj.Technologies {
+		if technologyItem.Name == "golang" {
+			technologyItem = technologyItem.FixName("go")
+		}
 		err = i.insertItem(technologyItem, "technology", obj.DownloadedAt)
 		if err != nil {
 			return result.SetErrorResult(err)
