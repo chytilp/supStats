@@ -97,6 +97,11 @@ func main() {
 	importIndexCmd.StringVar(&importIdxInputDir, "inputDir", "", "inputDir")
 	importIndexCmd.StringVar(&importIdxInputDir, "i", "", "inputDir")
 
+	downloadPyplCmd := flag.NewFlagSet("downloadPypl", flag.ExitOnError)
+	var dwnPyplInputFile string
+	downloadPyplCmd.StringVar(&dwnPyplInputFile, "inputFile", "", "inputFile")
+	downloadPyplCmd.StringVar(&dwnPyplInputFile, "i", "", "inputFile")
+
 	if len(os.Args) < 2 {
 		fmt.Println("expected 'download', 'table', 'relTable', 'convert', 'import', 'import25', 'importIdx' subcommands")
 		os.Exit(1)
@@ -173,6 +178,15 @@ func main() {
 			}
 		}
 		fmt.Printf("result: %v\n", resultsIdx)
+	case "downloadPypl":
+		downloadPyplCmd.Parse(os.Args[2:])
+		downloadPyplCommand := commands.NewDownloadPyplCommand(dwnPyplInputFile, config)
+		outFile, err := downloadPyplCommand.Run()
+		if err != nil {
+			fmt.Println("err in downloadPypl command.")
+			log.Fatalln(err.Error())
+		}
+		fmt.Printf("Pypl index downloaded, out file: %s\n", *outFile)
 
 	default:
 		fmt.Println("expected 'download', 'table', 'relTable', 'import' or 'convert' subcommands")
