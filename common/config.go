@@ -21,6 +21,7 @@ type Config struct {
 	HeaderReferer     string
 	HeaderOrigin      string
 	DbPath            string
+	IndexDataFolder   string
 }
 
 func GetConfig() *Config {
