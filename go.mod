@@ -6,6 +6,7 @@ require (
 	github.com/PuerkitoBio/goquery v1.10.3
 	github.com/csotherden/strftime v1.0.0
 	github.com/go-playground/assert/v2 v2.2.0
+	github.com/jfbus/httprs v1.0.1
 	github.com/mattn/go-sqlite3 v1.14.27
 	github.com/pelletier/go-toml v1.9.5
 	golang.org/x/exp v0.0.0-20240506185415-9bf2ced13842
@@ -13,5 +14,7 @@ require (
 
 require (
 	github.com/andybalholm/cascadia v1.3.3 // indirect
+	github.com/mitchellh/copystructure v1.2.0 // indirect
+	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	golang.org/x/net v0.39.0 // indirect
 )

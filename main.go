@@ -178,6 +178,7 @@ func main() {
 			}
 		}
 		fmt.Printf("result: %v\n", resultsIdx)
+
 	case "downloadPypl":
 		downloadPyplCmd.Parse(os.Args[2:])
 		downloadPyplCommand := commands.NewDownloadPyplCommand(dwnPyplInputFile, config)
@@ -187,6 +188,15 @@ func main() {
 			log.Fatalln(err.Error())
 		}
 		fmt.Printf("Pypl index downloaded, out file: %s\n", *outFile)
+
+	case "downloadTiobe":
+		downloadTiobeCmd := commands.NewDownloadTiobeCommand(config)
+		tiobeOutfile, err := downloadTiobeCmd.Run()
+		if err != nil {
+			fmt.Println("err in DownloadTiobeCommand")
+			log.Fatalln(err.Error())
+		}
+		fmt.Printf("Tiobe index downloaded, out file: %s\n", *tiobeOutfile)
 
 	default:
 		fmt.Println("expected 'download', 'table', 'relTable', 'import' or 'convert' subcommands")
