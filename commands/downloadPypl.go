@@ -54,11 +54,12 @@ func (d *DownloadPyplCommand) Run() (*string, error) {
 
 	outputFile := fmt.Sprintf("pypl_%s.json", month)
 	outputDir := d.config.IndexDataFolder + fmt.Sprintf("%s-%s/", monthArr[0], monthArr[1])
-	WriteJsonData(records, filepath.Join(outputDir, outputFile))
+	outputFilePath := filepath.Join(outputDir, outputFile)
+	WriteJsonData(records, outputFilePath)
 
-	ok := moveFile(d.sourceFile)
+	ok := moveFile(d.sourceFile, d.config.IndexDataFolder)
 	fmt.Printf("File: %s was archived: %t.\n", d.sourceFile, ok)
-	return nil, nil
+	return &outputFilePath, nil
 }
 
 func (d *DownloadPyplCommand) getDataReader(filename string) io.Reader {
@@ -144,12 +145,11 @@ func (d *DownloadPyplCommand) parsePyplTable(content io.Reader) ([]model.IndexRo
 	return rows, month, nil
 }
 
-func moveFile(fileWholePath string) bool {
-	dirname := filepath.Dir(fileWholePath)
+func moveFile(fileWholePath string, indexDataFolder string) bool {
 	filename := filepath.Base(fileWholePath)
 
-	if stat, err := os.Stat(dirname + "/archiv"); err == nil && stat.IsDir() {
-		newWholePath := filepath.Join(dirname, "archiv", filename)
+	if stat, err := os.Stat(indexDataFolder + "/archiv"); err == nil && stat.IsDir() {
+		newWholePath := filepath.Join(indexDataFolder, "archiv", filename)
 		err = os.Rename(fileWholePath, newWholePath)
 		if err != nil {
 			fmt.Printf("File: %s was not archived.Err: %s\n", fileWholePath, err)
