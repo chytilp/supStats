@@ -47,15 +47,47 @@ func (d *SupDataTable) GetRows(version int) (int, error) {
 }
 
 func (d *SupDataTable) RemoveMonth(fromDate string, toDate string, version int) error {
-	fmt.Printf("Supdata table -> fromDt: %s, toDt: %s, vesrion: %d\n", fromDate, toDate, version)
+	fmt.Printf("Supdata table -> fromDt: %s, toDt: %s, version: %d\n", fromDate, toDate, version)
 	removeSQL := `DELETE FROM supdata WHERE date >= ? AND date < ? AND version = ?`
 	statement, err := d.DB.Prepare(removeSQL)
 	if err != nil {
 		log.Fatalln(err.Error())
+		return err
 	}
 	_, err = statement.Exec(fromDate, toDate, version)
 	if err != nil {
 		log.Fatalln(err.Error())
+		return err
 	}
 	return nil
 }
+
+/*
+func (d *SupDataTable) Select(fromDate string, toDate string, version int) ([]*Record2[int], error) {
+	var err error
+	var rows *sql.Rows
+	sql := "SELECT language, count, date FROM supdata WHERE date >= $1 AND date < $2 AND version = $3"
+	rows, err = d.DB.Query(sql, fromDate, toDate, version)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	records := make([]*Record2[int], 8500)
+	var index int = 0
+	for rows.Next() {
+		var record Record2[int]
+		err = rows.Scan(&record.lang, &record.value, &record.date)
+		if err != nil {
+			return nil, err
+		}
+		records[index] = &record
+		index += 1
+	}
+	err = rows.Err()
+	if err != nil {
+		return nil, err
+	}
+	records = records[:index]
+	return records, nil
+}
+*/

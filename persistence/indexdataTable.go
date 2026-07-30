@@ -59,3 +59,33 @@ func (d *IndexDataTable) RemoveMonth(fromDate string, toDate string, indexType s
 	}
 	return nil
 }
+
+/*
+func (d *IndexDataTable) Select(fromDate string, toDate string, indexType string) ([]*Record2[float64], error) {
+	var err error
+	var rows *sql.Rows
+	sql := "SELECT lang, rating, date FROM indexdata WHERE date >= $1 AND date < $2 AND AND indexType = $3"
+	rows, err = d.DB.Query(sql, fromDate, toDate, indexType)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	records := make([]*Record2[float64], 8500)
+	var index int = 0
+	for rows.Next() {
+		var record Record2[float64]
+		err = rows.Scan(&record.lang, &record.value, &record.date)
+		if err != nil {
+			return nil, err
+		}
+		records[index] = &record
+		index += 1
+	}
+	err = rows.Err()
+	if err != nil {
+		return nil, err
+	}
+	records = records[:index]
+	return records, nil
+}
+*/

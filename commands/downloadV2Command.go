@@ -59,8 +59,9 @@ func NewDownloadV2Command(config *common.Config) DownloadV2Command {
 		"python", "c-sharp", "c%2B%2B", "c", "ruby", "scala", "nodejs",
 		"rust", "kotlin", "flutter", "react-native", "dart", "react-js",
 		"angular", "vue-js", "docker", "kubernetes", "ansible", "terraform",
-		"django", "flask",
+		"django", "flask", "fastapi",
 	}
+	// fulltext := []string{}
 	fulltext := []string{
 		"golang",
 	}

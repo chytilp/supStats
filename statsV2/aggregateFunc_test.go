@@ -41,3 +41,12 @@ func TestAggregateMedian(t *testing.T) {
 	}
 	assert.Equal(t, med_val, 5.5)
 }
+
+func TestAggregateFirst(t *testing.T) {
+	values := []int{1, 5, 3, 7, 6, 11}
+	first_val, err := First(values)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, first_val, 1.0)
+}

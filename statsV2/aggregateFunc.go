@@ -44,6 +44,13 @@ func Mean(values []int) (float64, error) {
 	return mean, nil
 }
 
+func First(values []int) (float64, error) {
+	if len(values) == 0 {
+		return 0.0, errors.New("empty collection on input First func")
+	}
+	return float64(values[0]), nil
+}
+
 func middleIndexes(values []int) []int {
 	if len(values)%2 != 0 {
 		middle := int(math.Floor(float64(len(values)) / float64(2)))
